@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/vBottomSheet"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background_bottom_sheet"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="@dimen/gap"
+        android:gravity="center"
+        android:text="@string/book_detail"
+        android:textColor="@color/text_primary"
+        android:textSize="@dimen/title"
+        android:textStyle="bold" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider" />
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/gap"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal">
+
+        <com.makeramen.roundedimageview.RoundedImageView
+            android:id="@+id/imgBookPictureDetail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleType="centerCrop"
+            app:riv_corner_radius="@dimen/gap"
+            tools:src="@drawable/ic_launcher_background" />
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/gap"
+            android:layout_weight="1"
+            android:gravity="start"
+            android:orientation="vertical">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtBookNameDetail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/text_primary"
+                android:textStyle="bold"
+                tools:text="Ông lão đánh cá" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtBookAuthorNameDetail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/by"
+                android:textSize="@dimen/text_secondary"
+                android:textStyle="italic|bold"
+                tools:text="by Trung Van" />
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/gap"
+                app:cardBackgroundColor="@color/purple_500"
+                app:cardCornerRadius="@dimen/gap"
+                app:cardElevation="@dimen/radius"
+                app:contentPadding="@dimen/gap">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtBookPriceDetail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_primary"
+                    android:textStyle="bold"
+                    tools:text="300.000 VND" />
+
+            </androidx.cardview.widget.CardView>
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider" />
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="@dimen/gap"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btnFavoriteDetail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/gap"
+            android:layout_marginHorizontal="50dp"
+            android:contentDescription="@string/image_description"
+            android:src="@drawable/ic_baseline_favorite_24"
+            app:backgroundTint="@color/white" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/add_to_favorites"
+            android:textColor="@color/text_primary" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider" />
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="@dimen/gap"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btnInfoDetail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/gap"
+            android:layout_marginHorizontal="50dp"
+            android:contentDescription="@string/image_description"
+            android:src="@drawable/ic_baseline_info_24"
+            app:backgroundTint="@color/white" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/more_information_about_book"
+            android:textColor="@color/text_primary" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+</androidx.appcompat.widget.LinearLayoutCompat>

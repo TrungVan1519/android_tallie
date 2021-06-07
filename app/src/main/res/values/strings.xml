@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">Tallie</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="image_description">image</string>
+    <string name="name">Name</string>
+    <string name="username">Username</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="phone">Phone</string>
+    <string name="sign_up">Sign up</string>
+    <string name="login">Login</string>
+    <string name="forgot_password">Forgot password?</string>
+    <string name="my_orders">My orders</string>
+    <string name="my_collection">My collection</string>
+    <string name="search">Search</string>
+    <string name="best_selling">Best selling books</string>
+    <string name="featured_books">Featured books</string>
+    <string name="cart">Cart</string>
+    <string name="remember_me">Remember me</string>
+    <string name="by">by</string>
+    <string name="log_out">Log out</string>
+    <string name="your_cart">Your Cart</string>
+    <string name="setting">Setting</string>
+    <string name="book_detail">Book Detail</string>
+    <string name="add_to_favorites">Add To Favorites</string>
+    <string name="more_information_about_book">More Information About Book</string>
+    <string name="home">Home</string>
+    <string name="notification">Notification</string>
+    <string name="profile">Profile</string>
+</resources>

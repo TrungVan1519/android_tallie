@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/gap"
+    app:cardCornerRadius="@dimen/gap"
+    app:cardElevation="@dimen/radius">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/vBookRow"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="@dimen/gap">
+
+        <com.makeramen.roundedimageview.RoundedImageView
+            android:id="@+id/imgBookPicture"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleType="fitCenter"
+            app:riv_corner_radius="@dimen/gap"
+            tools:src="@drawable/ic_launcher_background" />
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/gap"
+            android:layout_weight="1"
+            android:gravity="start"
+            android:orientation="vertical">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtBookName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/text_primary"
+                android:textStyle="bold"
+                tools:text="Ông lão đánh cá" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtBookAuthorName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/by"
+                android:textSize="@dimen/text_secondary"
+                android:textStyle="italic|bold"
+                tools:text="by Trung Van" />
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/gap"
+                app:cardBackgroundColor="@color/purple_500"
+                app:cardCornerRadius="@dimen/gap"
+                app:cardElevation="@dimen/radius"
+                app:contentPadding="@dimen/gap">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtBookPrice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_primary"
+                    android:textStyle="bold"
+                    tools:text="300.000 VND" />
+
+            </androidx.cardview.widget.CardView>
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+</androidx.cardview.widget.CardView>

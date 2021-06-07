@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navItemHome"
+        android:icon="@drawable/ic_baseline_home_24"
+        android:title="@string/home" />
+
+    <item
+        android:id="@+id/navItemNotification"
+        android:icon="@drawable/ic_baseline_notifications_none_24"
+        android:title="@string/notification" />
+
+    <item
+        android:id="@+id/navItemProfile"
+        android:icon="@drawable/ic_baseline_dehaze_24"
+        android:title="@string/profile" />
+
+</menu>
