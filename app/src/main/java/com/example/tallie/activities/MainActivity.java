@@ -1,4 +1,4 @@
-package com.example.tallie;
+package com.example.tallie.activities;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import com.example.tallie.R;
 import com.example.tallie.fragments.HomeFragment;
 import com.example.tallie.fragments.NotificationFragment;
 import com.example.tallie.fragments.ProfileFragment;

@@ -1,7 +1,6 @@
 <resources>
     <string name="app_name">Tallie</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="image_description">image</string>
     <string name="name">Name</string>
@@ -29,4 +28,5 @@
     <string name="home">Home</string>
     <string name="notification">Notification</string>
     <string name="profile">Profile</string>
+    <string name="back">Back</string>
 </resources>

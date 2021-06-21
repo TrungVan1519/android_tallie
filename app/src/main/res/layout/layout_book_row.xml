@@ -8,10 +8,9 @@
     app:cardCornerRadius="@dimen/gap"
     app:cardElevation="@dimen/radius">
 
-    <androidx.appcompat.widget.LinearLayoutCompat
-        android:id="@+id/vBookRow"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="horizontal"
         android:padding="@dimen/gap">
@@ -22,9 +21,9 @@
             android:layout_height="wrap_content"
             android:scaleType="fitCenter"
             app:riv_corner_radius="@dimen/gap"
-            tools:src="@drawable/ic_launcher_background" />
+            tools:src="@tools:sample/avatars" />
 
-        <androidx.appcompat.widget.LinearLayoutCompat
+        <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/gap"
@@ -32,22 +31,22 @@
             android:gravity="start"
             android:orientation="vertical">
 
-            <androidx.appcompat.widget.AppCompatTextView
+            <TextView
                 android:id="@+id/txtBookName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/text_primary"
                 android:textStyle="bold"
-                tools:text="Ông lão đánh cá" />
+                tools:text="Ông lão đánh cá vàng" />
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/txtBookAuthorName"
+            <TextView
+                android:id="@+id/txtBookAuthor"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/by"
                 android:textSize="@dimen/text_secondary"
                 android:textStyle="italic|bold"
-                tools:text="by Trung Van" />
+                tools:text="Trung Van" />
 
             <androidx.cardview.widget.CardView
                 android:layout_width="wrap_content"
@@ -58,7 +57,7 @@
                 app:cardElevation="@dimen/radius"
                 app:contentPadding="@dimen/gap">
 
-                <androidx.appcompat.widget.AppCompatTextView
+                <TextView
                     android:id="@+id/txtBookPrice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -66,11 +65,7 @@
                     android:textSize="@dimen/text_primary"
                     android:textStyle="bold"
                     tools:text="300.000 VND" />
-
             </androidx.cardview.widget.CardView>
-
-        </androidx.appcompat.widget.LinearLayoutCompat>
-
-    </androidx.appcompat.widget.LinearLayoutCompat>
-
+        </LinearLayout>
+    </LinearLayout>
 </androidx.cardview.widget.CardView>

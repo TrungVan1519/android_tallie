@@ -1,8 +1,10 @@
-package com.example.tallie;
+package com.example.tallie.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+
+import com.example.tallie.R;
 
 public class BookDetailActivity extends AppCompatActivity {
 

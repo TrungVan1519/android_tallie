@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,71 +16,59 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.tallie.LoginActivity;
 import com.example.tallie.R;
+import com.example.tallie.activities.BookDetailActivity;
+import com.example.tallie.activities.LoginActivity;
+import com.example.tallie.activities.MainActivity;
+import com.example.tallie.activities.SignUpActivity;
 import com.example.tallie.adapters.BookAdapter;
 import com.example.tallie.models.Book;
-import com.example.tallie.models.Cart;
-import com.example.tallie.utils.DBHandler;
-import com.example.tallie.utils.Formatter;
+import com.example.tallie.models.BookData;
+import com.example.tallie.models.User;
+import com.example.tallie.services.UserService;
 import com.example.tallie.utils.SharedPreferencesHandler;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.makeramen.roundedimageview.RoundedImageView;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link ProfileFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import okhttp3.OkHttpClient;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
 public class ProfileFragment extends Fragment implements View.OnClickListener {
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public ProfileFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment InfomationFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static ProfileFragment newInstance(String param1, String param2) {
-        ProfileFragment fragment = new ProfileFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
+
+    OkHttpClient okHttpClient = new OkHttpClient.Builder()
+            .readTimeout(5000, TimeUnit.MILLISECONDS)
+            .writeTimeout(5000, TimeUnit.MILLISECONDS)
+            .connectTimeout(10000, TimeUnit.MILLISECONDS)
+            .retryOnConnectionFailure(true)
+            .build();
+    Gson gson = new GsonBuilder().setLenient().create();
+    Retrofit retrofit = new Retrofit.Builder()
+            .baseUrl("https://tallie.herokuapp.com/")
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .build();
 
     List<Book> orderBooks, favBooks, seenBooks;
     BookAdapter orderAdapter, favAdapter, seenAdapter;
 
+    RoundedImageView imgUserAvatar;
     TextView txtUsername;
     Button btnLogout, btnSetting;
     FloatingActionButton btnPayCart, btnClearCart, btnFavorite, btnSeen;
@@ -90,6 +79,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
+        imgUserAvatar = view.findViewById(R.id.imgUserAvatar);
         txtUsername = view.findViewById(R.id.txtUsername);
         btnLogout = view.findViewById(R.id.btnLogout);
         btnSetting = view.findViewById(R.id.btnSetting);
@@ -100,15 +90,38 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         rcvMyOrders = view.findViewById(R.id.rcvMyOrders);
         rcvMyCollection = view.findViewById(R.id.rcvMyCollection);
 
-        // TODO: set up TextView
-        txtUsername.setText(SharedPreferencesHandler.loadAppData(getActivity()).get(0));
+        UserService userService = retrofit.create(UserService.class);
+        Call<User> userCallback = userService.getUserProfile(SharedPreferencesHandler.loadAppData(getContext()));
+        userCallback.enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                if (response.isSuccessful()) {
+                    // TODO: set up TextView
+                    txtUsername.setText(response.body().getName());
+                } else {
+                    try {
+                        Toast.makeText(getContext(), response.errorBody().string(), Toast.LENGTH_SHORT).show();
+                        Log.e("TAG", "onResponse: " + response.errorBody().string());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+                Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
+                Log.e("TAG", "onFailure: " + t.getMessage());
+            }
+        });
+
 
         // TODO: set up RecyclerView
         setupRecyclerView(R.id.btnFavorite);
 
         // TODO: handle e
-        btnFavorite.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.purple_200)));
         btnLogout.setOnClickListener(this);
+        btnSetting.setOnClickListener(this);
         btnPayCart.setOnClickListener(this);
         btnClearCart.setOnClickListener(this);
         btnFavorite.setOnClickListener(this);
@@ -123,26 +136,18 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btnLogout:
-                SharedPreferencesHandler.saveAppData(getActivity(), "", "");
-                new DBHandler(getActivity()).dropDB();
+                SharedPreferencesHandler.saveAppData(getActivity(), "");
 
                 Intent i = new Intent(getActivity(), LoginActivity.class);
                 i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(i);
                 getActivity().finish();
-
-                Toast.makeText(getActivity(), "Log out done", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.btnSetting:
                 Toast.makeText(getActivity(), "User setting is not available", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.btnPayCart:
-                long result = new DBHandler(getActivity())
-                        .addRecord(new Cart(Formatter.dateToString(Calendar.getInstance().getTime()), orderBooks.size()));
-                if (result > -1) {
-                    Toast.makeText(getActivity(), "Pay cart done", Toast.LENGTH_SHORT).show();
-                }
-
+                Toast.makeText(getActivity(), "Pay cart done", Toast.LENGTH_SHORT).show();
                 orderBooks.clear();
                 orderAdapter.notifyDataSetChanged();
                 break;
@@ -162,26 +167,33 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
 
     private void setupRecyclerView(int id) {
         orderBooks = new ArrayList<>();
-        orderAdapter = new BookAdapter(getActivity(), R.layout.layout_book_row, orderBooks);
+        orderAdapter = new BookAdapter(R.layout.layout_book_row, orderBooks);
+        setupAdapter(orderAdapter);
         rcvMyOrders.setAdapter(orderAdapter);
         rcvMyOrders.setLayoutManager(new GridLayoutManager(getActivity(), 1, GridLayoutManager.HORIZONTAL, false));
 
         if (id == R.id.btnFavorite) {
-            favBooks = new ArrayList<>();
-            favAdapter = new BookAdapter(getActivity(), R.layout.layout_book_row, favBooks);
+            favBooks = BookData.favBooks();
+            favAdapter = new BookAdapter(R.layout.layout_book_row, favBooks);
+            setupAdapter(favAdapter);
             rcvMyCollection.setAdapter(favAdapter);
         } else {
-            seenBooks = new ArrayList<>();
-            seenAdapter = new BookAdapter(getActivity(), R.layout.layout_book_row, seenBooks);
+            seenBooks = BookData.seenBooks();
+            seenAdapter = new BookAdapter(R.layout.layout_book_row, seenBooks);
+            setupAdapter(seenAdapter);
             rcvMyCollection.setAdapter(seenAdapter);
         }
         rcvMyCollection.setLayoutManager(new GridLayoutManager(getActivity(), 1, GridLayoutManager.HORIZONTAL, false));
     }
 
-    private void changeBackgroundTint(FloatingActionButton chosen) {
+    private void setupAdapter(BookAdapter adapter) {
+        adapter.setItemClickListener((v, position) -> startActivity(new Intent(getActivity(), BookDetailActivity.class)));
+    }
+
+    private void changeBackgroundTint(FloatingActionButton selected) {
         for (FloatingActionButton btn : Arrays.asList(btnFavorite, btnSeen)) {
             btn.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.white)));
         }
-        chosen.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.purple_200)));
+        selected.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.purple_200)));
     }
 }

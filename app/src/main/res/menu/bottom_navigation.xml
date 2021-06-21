@@ -15,5 +15,4 @@
         android:id="@+id/navItemProfile"
         android:icon="@drawable/ic_baseline_dehaze_24"
         android:title="@string/profile" />
-
 </menu>

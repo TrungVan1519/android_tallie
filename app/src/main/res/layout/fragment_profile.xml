@@ -7,7 +7,7 @@
     android:fillViewport="false"
     tools:context=".fragments.ProfileFragment">
 
-    <androidx.appcompat.widget.LinearLayoutCompat
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
@@ -16,11 +16,12 @@
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="0dp"
             app:cardBackgroundColor="@color/white"
             app:cardCornerRadius="0dp"
             app:cardElevation="@dimen/radius">
 
-            <androidx.appcompat.widget.LinearLayoutCompat
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@drawable/background_header"
@@ -29,6 +30,7 @@
                 android:padding="@dimen/gap">
 
                 <com.makeramen.roundedimageview.RoundedImageView
+                    android:id="@+id/imgUserAvatar"
                     android:layout_width="100dp"
                     android:layout_height="100dp"
                     android:layout_gravity="center"
@@ -37,55 +39,54 @@
                     app:riv_border_width="0dp"
                     app:riv_oval="true" />
 
-                <androidx.appcompat.widget.AppCompatTextView
+                <TextView
                     android:id="@+id/txtUsername"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/white"
                     android:textSize="@dimen/title"
                     tools:text="Trung Van" />
-
-            </androidx.appcompat.widget.LinearLayoutCompat>
-
+            </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <androidx.appcompat.widget.LinearLayoutCompat
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:orientation="horizontal">
 
-            <com.google.android.material.button.MaterialButton
+            <Button
                 android:id="@+id/btnLogout"
+                style="@style/Widget.AppCompat.Button.Colored"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/gap"
                 android:text="@string/log_out"
                 android:textAllCaps="false" />
 
-            <com.google.android.material.button.MaterialButton
+            <Button
                 android:id="@+id/btnSetting"
+                style="@style/Widget.AppCompat.Button.Colored"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/gap"
                 android:text="@string/setting"
                 android:textAllCaps="false" />
+        </LinearLayout>
 
-        </androidx.appcompat.widget.LinearLayoutCompat>
-
-        <androidx.appcompat.widget.LinearLayoutCompat
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/gap"
             android:orientation="vertical">
 
-            <androidx.appcompat.widget.LinearLayoutCompat
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
-                <androidx.appcompat.widget.AppCompatTextView
+                <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -112,29 +113,27 @@
                     android:contentDescription="@string/image_description"
                     android:src="@drawable/ic_baseline_clear_24"
                     app:backgroundTint="@color/white" />
-
-            </androidx.appcompat.widget.LinearLayoutCompat>
+            </LinearLayout>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rcvMyOrders"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
+        </LinearLayout>
 
-        </androidx.appcompat.widget.LinearLayoutCompat>
-
-        <androidx.appcompat.widget.LinearLayoutCompat
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/gap"
             android:orientation="vertical">
 
-            <androidx.appcompat.widget.LinearLayoutCompat
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
-                <androidx.appcompat.widget.AppCompatTextView
+                <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -150,7 +149,7 @@
                     android:layout_margin="@dimen/gap"
                     android:contentDescription="@string/image_description"
                     android:src="@drawable/ic_baseline_favorite_24"
-                    app:backgroundTint="@color/white" />
+                    app:backgroundTint="@color/purple_200" />
 
                 <com.google.android.material.floatingactionbutton.FloatingActionButton
                     android:id="@+id/btnSeen"
@@ -161,16 +160,12 @@
                     android:contentDescription="@string/image_description"
                     android:src="@drawable/ic_baseline_remove_red_eye_24"
                     app:backgroundTint="@color/white" />
-
-            </androidx.appcompat.widget.LinearLayoutCompat>
+            </LinearLayout>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rcvMyCollection"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
-
-        </androidx.appcompat.widget.LinearLayoutCompat>
-
-    </androidx.appcompat.widget.LinearLayoutCompat>
-
+        </LinearLayout>
+    </LinearLayout>
 </ScrollView>

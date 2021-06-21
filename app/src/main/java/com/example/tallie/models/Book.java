@@ -3,26 +3,30 @@ package com.example.tallie.models;
 import java.io.Serializable;
 
 public class Book implements Serializable {
-    private int picture;
-    private String name, description, authorName;
+    private int id;
+    private String name;
+    private String author;
     private double price;
-    private int qty;
+    private int quantity;
+    private String description;
+    private int picture;
 
-    public Book(int picture, String name, String description, String authorName, double price, int qty) {
-        this.picture = picture;
+    public Book(int id, String name, String author, double price, int quantity, String description, int picture) {
+        this.id = id;
         this.name = name;
-        this.description = description;
-        this.authorName = authorName;
+        this.author = author;
         this.price = price;
-        this.qty = qty;
-    }
-
-    public int getPicture() {
-        return picture;
-    }
-
-    public void setPicture(int picture) {
+        this.quantity = quantity;
+        this.description = description;
         this.picture = picture;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -33,20 +37,12 @@ public class Book implements Serializable {
         this.name = name;
     }
 
-    public String getDescription() {
-        return description;
+    public String getAuthor() {
+        return author;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getAuthorName() {
-        return authorName;
-    }
-
-    public void setAuthorName(String authorName) {
-        this.authorName = authorName;
+    public void setAuthor(String author) {
+        this.author = author;
     }
 
     public double getPrice() {
@@ -57,11 +53,27 @@ public class Book implements Serializable {
         this.price = price;
     }
 
-    public int getQty() {
-        return qty;
+    public int getQuantity() {
+        return quantity;
     }
 
-    public void setQty(int qty) {
-        this.qty = qty;
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public int getPicture() {
+        return picture;
+    }
+
+    public void setPicture(int picture) {
+        this.picture = picture;
     }
 }

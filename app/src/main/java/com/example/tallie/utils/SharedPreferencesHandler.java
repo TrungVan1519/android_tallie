@@ -9,30 +9,22 @@ import java.util.List;
 public class SharedPreferencesHandler {
 
     private final static String FILENAME = "tallie";
-    private final static String USERNAME = "username";
-    private final static String PASSWORD = "password";
+    private final static String JWT = "jwt";
 
     public static boolean isLoggedIn(Context context) {
         SharedPreferences preferences = context.getSharedPreferences(FILENAME, Context.MODE_PRIVATE);
-        String username = preferences.getString(USERNAME, "");
-        String password = preferences.getString(PASSWORD, "");
-
-        return !username.isEmpty() && !password.isEmpty();
+        return !preferences.getString(JWT, "").isEmpty();
     }
 
-    public static List<String> loadAppData(Context context) {
+    public static String loadAppData(Context context) {
         SharedPreferences preferences = context.getSharedPreferences(FILENAME, Context.MODE_PRIVATE);
-        String username = preferences.getString(USERNAME, "");
-        String password = preferences.getString(PASSWORD, "");
-
-        return Arrays.asList(username, password);
+        return preferences.getString(JWT, "");
     }
 
-    public static void saveAppData(Context context, String username, String password) {
+    public static void saveAppData(Context context, String jwt) {
         SharedPreferences preferences = context.getSharedPreferences(FILENAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putString(USERNAME, username);
-        editor.putString(PASSWORD, password);
+        editor.putString(JWT, jwt);
         editor.apply();
     }
 }
