@@ -26,40 +26,23 @@ import androidx.core.content.ContextCompat;
 import com.example.tallie.R;
 import com.example.tallie.models.User;
 import com.example.tallie.services.UserService;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.example.tallie.utils.RetrofitClient;
 import com.makeramen.roundedimageview.RoundedImageView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.concurrent.TimeUnit;
 
-import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class SignUpActivity extends AppCompatActivity implements View.OnClickListener {
 
     final int GALLERY_REQUEST = 2;
     final int GALLERY_CODE = 19;
-
-    OkHttpClient okHttpClient = new OkHttpClient.Builder()
-            .readTimeout(5000, TimeUnit.MILLISECONDS)
-            .writeTimeout(5000, TimeUnit.MILLISECONDS)
-            .connectTimeout(10000, TimeUnit.MILLISECONDS)
-            .retryOnConnectionFailure(true)
-            .build();
-    Gson gson = new GsonBuilder().setLenient().create();
-    Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl("https://tallie.herokuapp.com/")
-            .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create(gson))
-            .build();
+    UserService userService = RetrofitClient.getInstance("https://tallie.herokuapp.com/").create(UserService.class);
 
     RoundedImageView imgAvatar;
     EditText txtName, txtUsername, txtEmail, txtPassword, txtPhone;
@@ -103,7 +86,6 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                     return;
                 }
 
-                UserService userService = retrofit.create(UserService.class);
                 Call<User> callback = userService.registerUser(
                         new User(txtName.getText().toString(),
                                 txtUsername.getText().toString(),
@@ -114,12 +96,13 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
 
                 callback.enqueue(new Callback<User>() {
                     @Override
-                    public void onResponse(Call<User> call, Response<User> response) {
+                    public void onResponse(@NonNull Call<User> call, @NonNull Response<User> response) {
                         if (response.isSuccessful()) {
                             startActivity(new Intent(SignUpActivity.this, LoginActivity.class));
                             finish();
                         } else {
                             try {
+                                assert response.errorBody() != null;
                                 Toast.makeText(SignUpActivity.this, response.errorBody().string(), Toast.LENGTH_SHORT).show();
                                 Log.e("TAG", "onResponse: " + response.errorBody().string());
                             } catch (IOException e) {
@@ -129,7 +112,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                     }
 
                     @Override
-                    public void onFailure(Call<User> call, Throwable t) {
+                    public void onFailure(@NonNull Call<User> call, @NonNull Throwable t) {
                         Toast.makeText(SignUpActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
                         Log.e("TAG", "onFailure: " + t.getMessage());
                     }

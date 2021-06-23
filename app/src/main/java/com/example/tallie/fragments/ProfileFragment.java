@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,53 +20,36 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.tallie.R;
 import com.example.tallie.activities.BookDetailActivity;
 import com.example.tallie.activities.LoginActivity;
-import com.example.tallie.activities.MainActivity;
-import com.example.tallie.activities.SignUpActivity;
 import com.example.tallie.adapters.BookAdapter;
 import com.example.tallie.models.Book;
 import com.example.tallie.models.BookData;
 import com.example.tallie.models.User;
+import com.example.tallie.services.BookService;
 import com.example.tallie.services.UserService;
+import com.example.tallie.utils.RetrofitClient;
 import com.example.tallie.utils.SharedPreferencesHandler;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.makeramen.roundedimageview.RoundedImageView;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
-import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ProfileFragment extends Fragment implements View.OnClickListener {
+
+    BookService bookService = RetrofitClient.getInstance("https://tallie.herokuapp.com/").create(BookService.class);
+    UserService userService = RetrofitClient.getInstance("https://tallie.herokuapp.com/").create(UserService.class);
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
 
-    OkHttpClient okHttpClient = new OkHttpClient.Builder()
-            .readTimeout(5000, TimeUnit.MILLISECONDS)
-            .writeTimeout(5000, TimeUnit.MILLISECONDS)
-            .connectTimeout(10000, TimeUnit.MILLISECONDS)
-            .retryOnConnectionFailure(true)
-            .build();
-    Gson gson = new GsonBuilder().setLenient().create();
-    Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl("https://tallie.herokuapp.com/")
-            .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create(gson))
-            .build();
-
-    List<Book> orderBooks, favBooks, seenBooks;
+    ArrayList<Book> orderBooks, favBooks, seenBooks;
     BookAdapter orderAdapter, favAdapter, seenAdapter;
 
     RoundedImageView imgUserAvatar;
@@ -90,16 +74,16 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         rcvMyOrders = view.findViewById(R.id.rcvMyOrders);
         rcvMyCollection = view.findViewById(R.id.rcvMyCollection);
 
-        UserService userService = retrofit.create(UserService.class);
-        Call<User> userCallback = userService.getUserProfile(SharedPreferencesHandler.loadAppData(getContext()));
-        userCallback.enqueue(new Callback<User>() {
+        userService.getUserProfile(SharedPreferencesHandler.loadAppData(requireContext())).enqueue(new Callback<User>() {
             @Override
-            public void onResponse(Call<User> call, Response<User> response) {
-                if (response.isSuccessful()) {
+            public void onResponse(@NonNull Call<User> call, @NonNull Response<User> response) {
+                if (response.isSuccessful() && response.body() != null) {
                     // TODO: set up TextView
-                    txtUsername.setText(response.body().getName());
+                    User user = response.body();
+                    txtUsername.setText(user.getName());
                 } else {
                     try {
+                        assert response.errorBody() != null;
                         Toast.makeText(getContext(), response.errorBody().string(), Toast.LENGTH_SHORT).show();
                         Log.e("TAG", "onResponse: " + response.errorBody().string());
                     } catch (IOException e) {
@@ -109,12 +93,11 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
             }
 
             @Override
-            public void onFailure(Call<User> call, Throwable t) {
+            public void onFailure(@NonNull Call<User> call, @NonNull Throwable t) {
                 Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
                 Log.e("TAG", "onFailure: " + t.getMessage());
             }
         });
-
 
         // TODO: set up RecyclerView
         setupRecyclerView(R.id.btnFavorite);
@@ -136,12 +119,12 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btnLogout:
-                SharedPreferencesHandler.saveAppData(getActivity(), "");
+                SharedPreferencesHandler.saveAppData(requireActivity(), "");
 
                 Intent i = new Intent(getActivity(), LoginActivity.class);
                 i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(i);
-                getActivity().finish();
+                requireActivity().finish();
                 break;
             case R.id.btnSetting:
                 Toast.makeText(getActivity(), "User setting is not available", Toast.LENGTH_SHORT).show();
@@ -167,27 +150,20 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
 
     private void setupRecyclerView(int id) {
         orderBooks = new ArrayList<>();
-        orderAdapter = new BookAdapter(R.layout.layout_book_row, orderBooks);
-        setupAdapter(orderAdapter);
+        orderAdapter = new BookAdapter(orderBooks, (v, position) -> startActivity(new Intent(getActivity(), BookDetailActivity.class)));
         rcvMyOrders.setAdapter(orderAdapter);
         rcvMyOrders.setLayoutManager(new GridLayoutManager(getActivity(), 1, GridLayoutManager.HORIZONTAL, false));
 
         if (id == R.id.btnFavorite) {
             favBooks = BookData.favBooks();
-            favAdapter = new BookAdapter(R.layout.layout_book_row, favBooks);
-            setupAdapter(favAdapter);
+            favAdapter = new BookAdapter(favBooks, (v, position) -> startActivity(new Intent(getActivity(), BookDetailActivity.class)));
             rcvMyCollection.setAdapter(favAdapter);
         } else {
             seenBooks = BookData.seenBooks();
-            seenAdapter = new BookAdapter(R.layout.layout_book_row, seenBooks);
-            setupAdapter(seenAdapter);
+            seenAdapter = new BookAdapter(seenBooks, (v, position) -> startActivity(new Intent(getActivity(), BookDetailActivity.class)));
             rcvMyCollection.setAdapter(seenAdapter);
         }
         rcvMyCollection.setLayoutManager(new GridLayoutManager(getActivity(), 1, GridLayoutManager.HORIZONTAL, false));
-    }
-
-    private void setupAdapter(BookAdapter adapter) {
-        adapter.setItemClickListener((v, position) -> startActivity(new Intent(getActivity(), BookDetailActivity.class)));
     }
 
     private void changeBackgroundTint(FloatingActionButton selected) {

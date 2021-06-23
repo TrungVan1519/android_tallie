@@ -16,6 +16,9 @@ public class User implements Serializable {
     String bio;
     boolean is_seller;
 
+    public User() {
+    }
+
     public User(String username, String password) {
         this.username = username;
         this.password = password;

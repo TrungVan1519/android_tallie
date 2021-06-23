@@ -45,7 +45,6 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 }
                 default: {
-                    Toast.makeText(this, "Nothing to do", Toast.LENGTH_SHORT).show();
                     return false;
                 }
             }

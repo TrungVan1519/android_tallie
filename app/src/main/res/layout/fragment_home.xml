@@ -22,12 +22,12 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/best_selling"
+                android:text="@string/most_viewed_books"
                 android:textColor="@color/text_primary"
                 android:textSize="@dimen/title" />
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rcvBestSellingBooks"
+                android:id="@+id/rcvMostViewed"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
         </LinearLayout>

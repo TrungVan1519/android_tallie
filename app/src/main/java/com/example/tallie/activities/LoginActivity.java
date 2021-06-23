@@ -12,39 +12,24 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.tallie.R;
 import com.example.tallie.models.User;
 import com.example.tallie.services.UserService;
+import com.example.tallie.utils.RetrofitClient;
 import com.example.tallie.utils.SharedPreferencesHandler;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
-import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
-    OkHttpClient okHttpClient = new OkHttpClient.Builder()
-            .readTimeout(5000, TimeUnit.MILLISECONDS)
-            .writeTimeout(5000, TimeUnit.MILLISECONDS)
-            .connectTimeout(10000, TimeUnit.MILLISECONDS)
-            .retryOnConnectionFailure(true)
-            .build();
-    Gson gson = new GsonBuilder().setLenient().create();
-    Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl("https://tallie.herokuapp.com/")
-            .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create(gson))
-            .build();
+    UserService userService = RetrofitClient.getInstance("https://tallie.herokuapp.com/").create(UserService.class);
 
     EditText txtUsername, txtPassword;
     CheckBox ckbRememberMe;
@@ -85,7 +70,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     return;
                 }
 
-                UserService userService = retrofit.create(UserService.class);
                 Call<String> callback = userService.loginUser(
                         new User(txtUsername.getText().toString(),
                                 txtPassword.getText().toString())
@@ -93,14 +77,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
                 callback.enqueue(new Callback<String>() {
                     @Override
-                    public void onResponse(Call<String> call, Response<String> response) {
-                        if (response.isSuccessful()) {
+                    public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                        if (response.isSuccessful() && response.body() != null) {
                             String jwt = ckbRememberMe.isChecked() ? response.body() : "";
                             SharedPreferencesHandler.saveAppData(LoginActivity.this, jwt);
                             startActivity(new Intent(LoginActivity.this, MainActivity.class));
                             finish();
                         } else {
                             try {
+                                assert response.errorBody() != null;
                                 Toast.makeText(LoginActivity.this, response.errorBody().string(), Toast.LENGTH_SHORT).show();
                                 Log.e("TAG", "onResponse: " + response.errorBody().string());
                             } catch (IOException e) {
@@ -110,7 +95,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     }
 
                     @Override
-                    public void onFailure(Call<String> call, Throwable t) {
+                    public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
                         Toast.makeText(LoginActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
                         Log.e("TAG", "onFailure: " + t.getMessage());
                     }

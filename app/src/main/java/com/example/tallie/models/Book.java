@@ -1,6 +1,10 @@
 package com.example.tallie.models;
 
+import androidx.annotation.NonNull;
+
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Book implements Serializable {
     private int id;
@@ -9,16 +13,17 @@ public class Book implements Serializable {
     private double price;
     private int quantity;
     private String description;
-    private int picture;
+    private ArrayList<Picture> pictures;
+    int seller_id;
 
-    public Book(int id, String name, String author, double price, int quantity, String description, int picture) {
+    public Book(int id, String name, String author, double price, int quantity, String description, ArrayList<Picture> pictures) {
         this.id = id;
         this.name = name;
         this.author = author;
         this.price = price;
         this.quantity = quantity;
         this.description = description;
-        this.picture = picture;
+        this.pictures = pictures;
     }
 
     public int getId() {
@@ -69,11 +74,34 @@ public class Book implements Serializable {
         this.description = description;
     }
 
-    public int getPicture() {
-        return picture;
+    public ArrayList<Picture> getPictures() {
+        return pictures;
     }
 
-    public void setPicture(int picture) {
-        this.picture = picture;
+    public void setPictures(ArrayList<Picture> pictures) {
+        this.pictures = pictures;
+    }
+
+    public int getSeller_id() {
+        return seller_id;
+    }
+
+    public void setSeller_id(int seller_id) {
+        this.seller_id = seller_id;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "Book{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", author='" + author + '\'' +
+                ", price=" + price +
+                ", quantity=" + quantity +
+                ", description='" + description + '\'' +
+                ", pictures=" + pictures +
+                ", seller_id=" + seller_id +
+                '}';
     }
 }
