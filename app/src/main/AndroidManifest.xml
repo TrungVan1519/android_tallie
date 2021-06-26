@@ -14,6 +14,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Tallie">
+        <activity android:name=".activities.BookListActivity"></activity>
         <activity android:name=".activities.BookDetailActivity" />
         <activity
             android:name=".activities.CartActivity"

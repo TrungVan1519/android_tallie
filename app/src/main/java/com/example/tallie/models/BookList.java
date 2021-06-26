@@ -6,8 +6,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class BookList implements Serializable {
+
     Meta _meta;
     ArrayList<Book> data;
+    ArrayList<Book> products;
 
     public BookList(Meta _meta, ArrayList<Book> data) {
         this._meta = _meta;
@@ -30,12 +32,21 @@ public class BookList implements Serializable {
         this.data = data;
     }
 
+    public ArrayList<Book> getProducts() {
+        return products;
+    }
+
+    public void setProducts(ArrayList<Book> products) {
+        this.products = products;
+    }
+
     @NonNull
     @Override
     public String toString() {
-        return "FeaturedBook{" +
+        return "BookList{" +
                 "_meta=" + _meta +
                 ", data=" + data +
+                ", products=" + products +
                 '}';
     }
 }

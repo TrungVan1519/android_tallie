@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:orientation="horizontal">
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btnFullScreen"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/gap"
+            android:contentDescription="@string/image_description"
+            android:src="@drawable/ic_baseline_open_in_full_24"
+            app:backgroundTint="@color/white" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btnClose"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/gap"
+            android:contentDescription="@string/image_description"
+            android:src="@drawable/ic_baseline_clear_24"
+            app:backgroundTint="@color/white" />
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/lsvBooks"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</LinearLayout>

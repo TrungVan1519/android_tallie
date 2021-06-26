@@ -1,17 +1,167 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
-    android:orientation="vertical"
     android:padding="@dimen/gap"
     tools:context=".activities.BookDetailActivity">
 
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="BookDetail"
-        android:textSize="@dimen/text_primary" />
-</LinearLayout>
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <com.makeramen.roundedimageview.RoundedImageView
+            android:id="@+id/imgBookPicture"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:maxWidth="200dp"
+            android:maxHeight="180dp"
+            android:scaleType="fitXY"
+            app:riv_corner_radius="@dimen/gap"
+            tools:src="@tools:sample/avatars" />
+
+        <Button
+            android:id="@+id/btnAddToCart"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="@dimen/gap"
+            android:text="@string/add_to_cart"
+            android:textAllCaps="false" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="@dimen/gap"
+            android:gravity="start"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/txtBookName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/text_primary"
+                android:textStyle="bold"
+                tools:text="Ông lão đánh cá vàng" />
+
+            <TextView
+                android:id="@+id/txtBookAuthor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/by"
+                android:textSize="@dimen/text_secondary"
+                android:textStyle="italic|bold"
+                tools:text="Trung Van" />
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/gap"
+                app:cardBackgroundColor="@color/purple_500"
+                app:cardCornerRadius="@dimen/gap"
+                app:cardElevation="@dimen/radius"
+                app:contentPadding="@dimen/gap">
+
+                <TextView
+                    android:id="@+id/txtBookPrice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_primary"
+                    android:textStyle="bold"
+                    tools:text="300.000 VND" />
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:id="@+id/txtBookDescription"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="@dimen/gap"
+                android:text="@string/by"
+                android:textSize="@dimen/text_secondary"
+                tools:text="Book Description" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="@dimen/gap"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/seller"
+                android:textSize="@dimen/title"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <com.makeramen.roundedimageview.RoundedImageView
+                    android:id="@+id/imgSellerAvatar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:adjustViewBounds="true"
+                    android:maxWidth="100dp"
+                    android:maxHeight="100dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_hmm"
+                    app:riv_border_width="0dp"
+                    app:riv_oval="true" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/txtSellerUsername"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/gap"
+                        android:layout_marginLeft="@dimen/gap"
+                        android:textSize="@dimen/text_primary"
+                        android:textStyle="bold"
+                        tools:text="Trung Van" />
+
+                    <TextView
+                        android:id="@+id/txtSellerAddress"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/gap"
+                        android:layout_marginLeft="@dimen/gap"
+                        android:textSize="@dimen/text_secondary"
+                        android:textStyle="italic|bold"
+                        tools:text="trungvan@gmail.com" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="@dimen/gap"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/reviews"
+                android:textSize="@dimen/title"
+                android:textStyle="bold" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rcvReviews"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="@dimen/gap" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

@@ -46,7 +46,7 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         if (books.get(position).getPictures() == null) {
-            holder.imgBookPicture.setImageResource(R.drawable.ic_launcher_background);
+            holder.imgBookPicture.setImageResource(R.drawable.ic_hmm);
         } else {
             imageService.downloadImage(books.get(position).getPictures().get(0).getImg_id()).enqueue(new Callback<ResponseBody>() {
                 @Override
@@ -54,7 +54,7 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.ViewHolder> {
                     if (response.isSuccessful() && response.body() != null) {
                         Bitmap image = BitmapFactory.decodeStream(response.body().byteStream());
                         holder.imgBookPicture.setImageBitmap(image);
-                    }else {
+                    } else {
                         try {
                             assert response.errorBody() != null;
                             Toast.makeText(holder.itemView.getContext(), response.errorBody().string(), Toast.LENGTH_SHORT).show();
@@ -71,11 +71,12 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.ViewHolder> {
                     Log.e("TAG", "onFailure: " + t.getMessage());
                 }
             });
+
+            holder.txtBookName.setText(books.get(position).getName());
+            holder.txtBookAuthor.setText(books.get(position).getAuthor());
+            holder.txtBookPrice.setText(String.valueOf(books.get(position).getPrice()));
+            holder.itemView.setOnClickListener(v -> itemClickListener.onClick(v, position));
         }
-        holder.txtBookName.setText(books.get(position).getName());
-        holder.txtBookAuthor.setText(books.get(position).getAuthor());
-        holder.txtBookPrice.setText(String.valueOf(books.get(position).getPrice()));
-        holder.itemView.setOnClickListener(v -> itemClickListener.onClick(v, position));
     }
 
     @Override

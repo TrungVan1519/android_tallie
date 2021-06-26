@@ -30,4 +30,8 @@
     <string name="profile">Profile</string>
     <string name="back">Back</string>
     <string name="most_viewed_books">Most viewed books</string>
+    <string name="add_to_cart">Add to cart</string>
+    <string name="seller">Seller</string>
+    <string name="all_categories">All categories</string>
+    <string name="reviews">Reviews</string>
 </resources>

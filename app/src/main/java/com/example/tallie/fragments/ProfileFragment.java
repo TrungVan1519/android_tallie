@@ -53,7 +53,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     BookAdapter orderAdapter, favAdapter, seenAdapter;
 
     RoundedImageView imgUserAvatar;
-    TextView txtUsername;
+    TextView txtUsername, txtEmail;
     Button btnLogout, btnSetting;
     FloatingActionButton btnPayCart, btnClearCart, btnFavorite, btnSeen;
     RecyclerView rcvMyOrders, rcvMyCollection;
@@ -80,7 +80,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                 if (response.isSuccessful() && response.body() != null) {
                     // TODO: set up TextView
                     User user = response.body();
-                    txtUsername.setText(user.getName());
+                    txtUsername.setText(user.getUsername());
                 } else {
                     try {
                         assert response.errorBody() != null;

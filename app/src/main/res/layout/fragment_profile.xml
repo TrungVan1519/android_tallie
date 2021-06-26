@@ -38,6 +38,14 @@
                 android:textColor="@color/white"
                 android:textSize="@dimen/title"
                 tools:text="Trung Van" />
+
+            <TextView
+                android:id="@+id/txtEmail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_primary"
+                tools:text="trungvan@gmail.com" />
         </LinearLayout>
 
         <LinearLayout

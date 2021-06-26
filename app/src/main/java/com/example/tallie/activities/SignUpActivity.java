@@ -42,6 +42,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
 
     final int GALLERY_REQUEST = 2;
     final int GALLERY_CODE = 19;
+
     UserService userService = RetrofitClient.getInstance("https://tallie.herokuapp.com/").create(UserService.class);
 
     RoundedImageView imgAvatar;

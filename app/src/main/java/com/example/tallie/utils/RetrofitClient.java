@@ -10,11 +10,12 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitClient {
+
     public static Retrofit getInstance(String baseUrl) {
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
-                .readTimeout(5000, TimeUnit.MILLISECONDS)
-                .writeTimeout(5000, TimeUnit.MILLISECONDS)
-                .connectTimeout(10000, TimeUnit.MILLISECONDS)
+                .readTimeout(10000, TimeUnit.MILLISECONDS)
+                .writeTimeout(10000, TimeUnit.MILLISECONDS)
+                .connectTimeout(15000, TimeUnit.MILLISECONDS)
                 .retryOnConnectionFailure(true)
                 .build();
         Gson gson = new GsonBuilder().setLenient().create();

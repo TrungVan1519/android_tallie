@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="@dimen/gap">
+
+    <com.makeramen.roundedimageview.RoundedImageView
+        android:id="@+id/imgReviewerAvatar"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:adjustViewBounds="true"
+        android:maxWidth="200dp"
+        android:maxHeight="180dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/ic_hmm"
+        app:riv_border_width="0dp"
+        app:riv_corner_radius="@dimen/gap"
+        app:riv_oval="true"
+        tools:src="@tools:sample/avatars" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/gap"
+        android:layout_marginLeft="@dimen/gap"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/txtReviewerUsername"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/text_primary"
+            android:textStyle="bold"
+            tools:text="Trung Van" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            tools:ignore="UseCompoundDrawables">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/image_description"
+                android:src="@drawable/ic_baseline_star_rate_24" />
+
+            <TextView
+                android:id="@+id/txtReviewRating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textSize="@dimen/text_primary"
+                tools:text="5.0" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/txtReviewContent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/text_secondary"
+            tools:text="User review" />
+    </LinearLayout>
+</LinearLayout>
