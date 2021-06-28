@@ -1,7 +1,6 @@
 package com.example.tallie.models;
 
 import java.io.Serializable;
-import java.util.Date;
 
 public class Review implements Serializable {
 

@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.tallie.R;
 import com.example.tallie.adapters.BookListViewAdapter;
 import com.example.tallie.models.Book;
+import com.example.tallie.models.BookList;
 import com.example.tallie.services.BookService;
 import com.example.tallie.utils.RetrofitClient;
 
@@ -32,12 +33,12 @@ public class BookListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_book_list);
 
-        lsvBooks = findViewById(R.id.lsvBooks);
-
-        ArrayList<Book> books = (ArrayList<Book>) getIntent().getSerializableExtra("bookList");
-        lsvBooks.setAdapter(new BookListViewAdapter<>(this, R.layout.layout_book_row, books));
+        BookList bookList = (BookList) getIntent().getSerializableExtra("bookList");
+        ArrayList<Book> books = bookList.getProducts() == null ? new ArrayList<>() : bookList.getProducts();
 
         // TODO: handle events
+        lsvBooks = findViewById(R.id.lsvBooks);
+        lsvBooks.setAdapter(new BookListViewAdapter<>(this, R.layout.layout_book_row, books));
         lsvBooks.setOnItemClickListener((parent, view, position, id) -> getBookDetail(books.get(position).getId()));
     }
 

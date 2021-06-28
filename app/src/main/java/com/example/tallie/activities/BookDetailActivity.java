@@ -23,6 +23,7 @@ import com.example.tallie.services.BookService;
 import com.example.tallie.services.ImageService;
 import com.example.tallie.services.UserService;
 import com.example.tallie.utils.RetrofitClient;
+import com.example.tallie.utils.SharedPreferencesHandler;
 import com.makeramen.roundedimageview.RoundedImageView;
 
 import java.io.IOException;
@@ -41,7 +42,7 @@ public class BookDetailActivity extends AppCompatActivity {
     ImageService imageService = RetrofitClient.getInstance("https://tallie-image.herokuapp.com/").create(ImageService.class);
 
     RoundedImageView imgBookPicture;
-    Button btnAddToCart;
+    Button btnAddToCart, btnAddToWishList;
     TextView txtBookName, txtBookAuthor, txtBookPrice, txtBookDescription, txtSellerUsername, txtSellerAddress;
     RecyclerView rcvReviews;
 
@@ -52,6 +53,7 @@ public class BookDetailActivity extends AppCompatActivity {
 
         imgBookPicture = findViewById(R.id.imgBookPicture);
         btnAddToCart = findViewById(R.id.btnAddToCart);
+        btnAddToWishList = findViewById(R.id.btnAddToWishList);
         txtBookName = findViewById(R.id.txtBookName);
         txtBookAuthor = findViewById(R.id.txtBookAuthor);
         txtBookPrice = findViewById(R.id.txtBookPrice);
@@ -62,15 +64,68 @@ public class BookDetailActivity extends AppCompatActivity {
 
         Book book = getIntentData();
 
-        if (book != null) {
-            populateBookData(book);
-            getSellerData(book);
-            getAllReviews(book);
-        }
+        if (book == null) return;
+
+        addToSeenList(book);
+        populateBookData(book);
+        getSellerData(book);
+        getAllReviews(book);
+
+        // TODO: 2021-06-27 handle events
+        btnAddToCart.setOnClickListener(v -> {
+
+        });
+
+        btnAddToWishList.setOnClickListener(v -> bookService.addToWishList(SharedPreferencesHandler.loadAppData(this), new Book(book.getId())).enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Toast.makeText(BookDetailActivity.this, response.body(), Toast.LENGTH_SHORT).show();
+                } else {
+                    try {
+                        assert response.errorBody() != null;
+                        Toast.makeText(BookDetailActivity.this, "Book has been existed in your wishlist", Toast.LENGTH_SHORT).show();
+                        Log.e("TAG", "onResponse: Book has been existed in your wishlist \t" + response.errorBody().string());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                Toast.makeText(BookDetailActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                Log.e("TAG", "onFailure: " + t.getMessage());
+            }
+        }));
     }
 
     private Book getIntentData() {
-        return  (Book) getIntent().getSerializableExtra("book");
+        return (Book) getIntent().getSerializableExtra("book");
+    }
+
+    private void addToSeenList(Book book) {
+        bookService.addToSeenList(SharedPreferencesHandler.loadAppData(this), new Book(book.getId())).enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Log.i("TAG", "onResponse: " + response.body());
+                } else {
+                    try {
+                        assert response.errorBody() != null;
+                        Log.e("TAG", "onResponse: Product has been existed \t" + response.errorBody().string());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                Toast.makeText(BookDetailActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                Log.e("TAG", "onFailure: " + t.getMessage());
+            }
+        });
     }
 
     private void populateBookData(Book book) {

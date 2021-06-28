@@ -22,7 +22,7 @@ import com.example.tallie.activities.BookDetailActivity;
 import com.example.tallie.activities.LoginActivity;
 import com.example.tallie.adapters.BookAdapter;
 import com.example.tallie.models.Book;
-import com.example.tallie.models.BookData;
+import com.example.tallie.models.BookList;
 import com.example.tallie.models.User;
 import com.example.tallie.services.BookService;
 import com.example.tallie.services.UserService;
@@ -49,8 +49,8 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         super.onCreate(savedInstanceState);
     }
 
-    ArrayList<Book> orderBooks, favBooks, seenBooks;
-    BookAdapter orderAdapter, favAdapter, seenAdapter;
+    ArrayList<Book> orderBooks;
+    BookAdapter orderAdapter;
 
     RoundedImageView imgUserAvatar;
     TextView txtUsername, txtEmail;
@@ -65,6 +65,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
 
         imgUserAvatar = view.findViewById(R.id.imgUserAvatar);
         txtUsername = view.findViewById(R.id.txtUsername);
+        txtEmail = view.findViewById(R.id.txtEmail);
         btnLogout = view.findViewById(R.id.btnLogout);
         btnSetting = view.findViewById(R.id.btnSetting);
         btnPayCart = view.findViewById(R.id.btnPayCart);
@@ -80,7 +81,9 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                 if (response.isSuccessful() && response.body() != null) {
                     // TODO: set up TextView
                     User user = response.body();
+                    Log.i("TAG", "onResponse: " + user);
                     txtUsername.setText(user.getUsername());
+                    txtEmail.setText(user.getEmail());
                 } else {
                     try {
                         assert response.errorBody() != null;
@@ -155,15 +158,10 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         rcvMyOrders.setLayoutManager(new GridLayoutManager(getActivity(), 1, GridLayoutManager.HORIZONTAL, false));
 
         if (id == R.id.btnFavorite) {
-            favBooks = BookData.favBooks();
-            favAdapter = new BookAdapter(favBooks, (v, position) -> startActivity(new Intent(getActivity(), BookDetailActivity.class)));
-            rcvMyCollection.setAdapter(favAdapter);
+            getWishList();
         } else {
-            seenBooks = BookData.seenBooks();
-            seenAdapter = new BookAdapter(seenBooks, (v, position) -> startActivity(new Intent(getActivity(), BookDetailActivity.class)));
-            rcvMyCollection.setAdapter(seenAdapter);
+            getSeenList();
         }
-        rcvMyCollection.setLayoutManager(new GridLayoutManager(getActivity(), 1, GridLayoutManager.HORIZONTAL, false));
     }
 
     private void changeBackgroundTint(FloatingActionButton selected) {
@@ -171,5 +169,89 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
             btn.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.white)));
         }
         selected.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.purple_200)));
+    }
+
+    private void getWishList() {
+        bookService.getWishList(SharedPreferencesHandler.loadAppData(requireContext())).enqueue(new Callback<BookList>() {
+            @Override
+            public void onResponse(@NonNull Call<BookList> call, @NonNull Response<BookList> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    BookList bookList = response.body();
+                    ArrayList<Book> books = bookList.getProducts() == null ? new ArrayList<>() : bookList.getProducts();
+                    rcvMyCollection.setAdapter(new BookAdapter(books, (v, position) -> getBookDetail(books.get(position).getId())));
+                    rcvMyCollection.setLayoutManager(new GridLayoutManager(getActivity(), 1, GridLayoutManager.HORIZONTAL, false));
+                } else {
+                    try {
+                        assert response.errorBody() != null;
+                        Toast.makeText(requireContext(), response.errorBody().string(), Toast.LENGTH_SHORT).show();
+                        Log.e("TAG", "onResponse: " + response.errorBody().string());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<BookList> call, @NonNull Throwable t) {
+                Toast.makeText(requireContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
+                Log.e("TAG", "onFailure: " + t.getMessage());
+            }
+        });
+    }
+
+    private void getSeenList() {
+        bookService.getSeenList(SharedPreferencesHandler.loadAppData(requireContext())).enqueue(new Callback<BookList>() {
+            @Override
+            public void onResponse(@NonNull Call<BookList> call, @NonNull Response<BookList> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    BookList bookList = response.body();
+                    ArrayList<Book> books = bookList.getProducts() == null ? new ArrayList<>() : bookList.getProducts();
+                    rcvMyCollection.setAdapter(new BookAdapter(books, (v, position) -> getBookDetail(books.get(position).getId())));
+                    rcvMyCollection.setLayoutManager(new GridLayoutManager(getActivity(), 1, GridLayoutManager.HORIZONTAL, false));
+                } else {
+                    try {
+                        assert response.errorBody() != null;
+                        Toast.makeText(requireContext(), response.errorBody().string(), Toast.LENGTH_SHORT).show();
+                        Log.e("TAG", "onResponse: " + response.errorBody().string());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<BookList> call, @NonNull Throwable t) {
+                Toast.makeText(requireContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
+                Log.e("TAG", "onFailure: " + t.getMessage());
+            }
+        });
+    }
+
+    private void getBookDetail(int bookId) {
+        bookService.getBookDetail(bookId).enqueue(new Callback<Book>() {
+            @Override
+            public void onResponse(@NonNull Call<Book> call, @NonNull Response<Book> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Book book = response.body();
+                    Intent i = new Intent(getActivity(), BookDetailActivity.class);
+                    i.putExtra("book", book);
+                    startActivity(i);
+                } else {
+                    try {
+                        assert response.errorBody() != null;
+                        Toast.makeText(getContext(), response.errorBody().string(), Toast.LENGTH_SHORT).show();
+                        Log.e("TAG", "onResponse: " + response.errorBody().string());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Book> call, @NonNull Throwable t) {
+                Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
+                Log.e("TAG", "onFailure: " + t.getMessage());
+            }
+        });
     }
 }

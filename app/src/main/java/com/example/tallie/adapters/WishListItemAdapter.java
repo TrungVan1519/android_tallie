@@ -14,7 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tallie.R;
-import com.example.tallie.models.Book;
+import com.example.tallie.models.MostViewedListItem;
 import com.example.tallie.services.ImageService;
 import com.example.tallie.utils.RetrofitClient;
 
@@ -26,14 +26,14 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class BookAdapter extends RecyclerView.Adapter<BookAdapter.ViewHolder> {
+public class WishListItemAdapter extends RecyclerView.Adapter<WishListItemAdapter.ViewHolder> {
 
     private final ImageService imageService = RetrofitClient.getInstance("https://tallie-image.herokuapp.com/").create(ImageService.class);
     private final ItemClickListener itemClickListener;
-    private final ArrayList<Book> books;
+    private final ArrayList<MostViewedListItem> mostViewedListItems;
 
-    public BookAdapter(ArrayList<Book> books, ItemClickListener itemClickListener) {
-        this.books = books;
+    public WishListItemAdapter(ArrayList<MostViewedListItem> mostViewedListItems, ItemClickListener itemClickListener) {
+        this.mostViewedListItems = mostViewedListItems;
         this.itemClickListener = itemClickListener;
     }
 
@@ -45,10 +45,10 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        if (books.get(position).getPictures() == null) {
+        if (mostViewedListItems.get(position).getProduct().getPictures() == null) {
             holder.imgBookPicture.setImageResource(R.drawable.ic_hmm);
         } else {
-            imageService.downloadImage(books.get(position).getPictures().get(0).getImg_id()).enqueue(new Callback<ResponseBody>() {
+            imageService.downloadImage(mostViewedListItems.get(position).getProduct().getPictures().get(0).getImg_id()).enqueue(new Callback<ResponseBody>() {
                 @Override
                 public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
                     if (response.isSuccessful() && response.body() != null) {
@@ -72,15 +72,15 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.ViewHolder> {
                 }
             });
         }
-        holder.txtBookName.setText(books.get(position).getName());
-        holder.txtBookAuthor.setText(books.get(position).getAuthor());
-        holder.txtBookPrice.setText(String.valueOf(books.get(position).getPrice()));
+        holder.txtBookName.setText(mostViewedListItems.get(position).getProduct().getName());
+        holder.txtBookAuthor.setText(mostViewedListItems.get(position).getProduct().getAuthor());
+        holder.txtBookPrice.setText(String.valueOf(mostViewedListItems.get(position).getProduct().getPrice()));
         holder.itemView.setOnClickListener(v -> itemClickListener.onClick(v, position));
     }
 
     @Override
     public int getItemCount() {
-        return books.size();
+        return mostViewedListItems.size();
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {

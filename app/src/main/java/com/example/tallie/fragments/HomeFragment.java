@@ -22,10 +22,13 @@ import com.example.tallie.activities.BookListActivity;
 import com.example.tallie.adapters.BookAdapter;
 import com.example.tallie.adapters.CategoryAdapter;
 import com.example.tallie.adapters.BookListViewAdapter;
+import com.example.tallie.adapters.WishListItemAdapter;
 import com.example.tallie.models.Book;
 import com.example.tallie.models.BookList;
 import com.example.tallie.models.Category;
 import com.example.tallie.models.CategoryList;
+import com.example.tallie.models.MostViewedList;
+import com.example.tallie.models.MostViewedListItem;
 import com.example.tallie.services.BookService;
 import com.example.tallie.utils.RetrofitClient;
 
@@ -94,7 +97,7 @@ public class HomeFragment extends Fragment {
                                     dialog.findViewById(R.id.btnClose).setOnClickListener(v -> dialog.dismiss());
                                     dialog.findViewById(R.id.btnFullScreen).setOnClickListener(v -> {
                                         Intent i = new Intent(getContext(), BookListActivity.class);
-                                        i.putExtra("bookList", books);
+                                        i.putExtra("bookList", bookList);
                                         requireContext().startActivity(i);
                                     });
 
@@ -138,13 +141,13 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        bookService.allMostViewed().enqueue(new Callback<BookList>() {
+        bookService.allMostViewed().enqueue(new Callback<MostViewedList>() {
             @Override
-            public void onResponse(@NonNull Call<BookList> call, @NonNull Response<BookList> response) {
+            public void onResponse(@NonNull Call<MostViewedList> call, @NonNull Response<MostViewedList> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    BookList bookList = response.body();
-                    ArrayList<Book> books = bookList.getData() == null ? new ArrayList<>() : bookList.getData();
-                    rcvMostViewed.setAdapter(new BookAdapter(books, (v, position) -> getBookDetail(books.get(position).getId())));
+                    MostViewedList mostViewedList = response.body();
+                    ArrayList<MostViewedListItem> mostViewedListItems = mostViewedList.getData() == null ? new ArrayList<>() : mostViewedList.getData();
+                    rcvMostViewed.setAdapter(new WishListItemAdapter(mostViewedListItems, (v, position) -> getBookDetail(mostViewedListItems.get(position).getProduct().getId())));
                     rcvMostViewed.setLayoutManager(new GridLayoutManager(getActivity(), 1, GridLayoutManager.HORIZONTAL, false));
                 } else {
                     try {
@@ -158,7 +161,7 @@ public class HomeFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(@NonNull Call<BookList> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<MostViewedList> call, @NonNull Throwable t) {
                 Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
                 Log.e("TAG", "onFailure: " + t.getMessage());
             }

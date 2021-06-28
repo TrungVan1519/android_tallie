@@ -4,10 +4,11 @@ import androidx.annotation.NonNull;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 
 public class Book implements Serializable {
+
     private int id;
+    private int product_id; // product_id == id
     private String name;
     private String author;
     private double price;
@@ -24,6 +25,18 @@ public class Book implements Serializable {
         this.quantity = quantity;
         this.description = description;
         this.pictures = pictures;
+    }
+
+    public Book(int product_id) {
+        this.product_id = product_id;
+    }
+
+    public int getProduct_id() {
+        return product_id;
+    }
+
+    public void setProduct_id(int product_id) {
+        this.product_id = product_id;
     }
 
     public int getId() {
