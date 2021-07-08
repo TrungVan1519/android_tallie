@@ -81,7 +81,6 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                 if (response.isSuccessful() && response.body() != null) {
                     // TODO: set up TextView
                     User user = response.body();
-                    Log.i("TAG", "onResponse: " + user);
                     txtUsername.setText(user.getUsername());
                     txtEmail.setText(user.getEmail());
                 } else {

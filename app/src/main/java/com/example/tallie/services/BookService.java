@@ -3,11 +3,14 @@ package com.example.tallie.services;
 import com.example.tallie.models.Book;
 import com.example.tallie.models.BookList;
 import com.example.tallie.models.CategoryList;
+import com.example.tallie.models.Order;
+import com.example.tallie.models.OrderList;
 import com.example.tallie.models.ReviewList;
 import com.example.tallie.models.MostViewedList;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
@@ -55,4 +58,8 @@ public interface BookService {
     @Headers({"Content-Type: application/json"})
     @GET("api/seen")
     Call<BookList> getSeenList(@Header("X-Access-Token") String jwt);
+
+    @Headers({"Content-Type: application/json"})
+    @POST("api/orders")
+    Call<Order> orderBook(@Header("X-Access-Token") String jwt, @Body Order order);
 }

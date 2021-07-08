@@ -18,7 +18,9 @@ public class RetrofitClient {
                 .connectTimeout(15000, TimeUnit.MILLISECONDS)
                 .retryOnConnectionFailure(true)
                 .build();
-        Gson gson = new GsonBuilder().setLenient().create();
+
+        // TODO: have to setDateFormat("yyyy-MM-dd") for automatically converting date type
+        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").setLenient().create();
         return new Retrofit.Builder()
                 .baseUrl(baseUrl)
                 .client(okHttpClient)

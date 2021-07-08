@@ -16,19 +16,25 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.tallie.R;
 import com.example.tallie.adapters.ReviewAdapter;
 import com.example.tallie.models.Book;
+import com.example.tallie.models.Order;
+import com.example.tallie.models.PaymentCard;
 import com.example.tallie.models.Review;
 import com.example.tallie.models.ReviewList;
 import com.example.tallie.models.User;
 import com.example.tallie.services.BookService;
 import com.example.tallie.services.ImageService;
+import com.example.tallie.services.PaymentService;
 import com.example.tallie.services.UserService;
 import com.example.tallie.utils.RetrofitClient;
 import com.example.tallie.utils.SharedPreferencesHandler;
 import com.makeramen.roundedimageview.RoundedImageView;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -40,6 +46,9 @@ public class BookDetailActivity extends AppCompatActivity {
     UserService userService = RetrofitClient.getInstance("https://tallie.herokuapp.com/").create(UserService.class);
     BookService bookService = RetrofitClient.getInstance("https://tallie.herokuapp.com/").create(BookService.class);
     ImageService imageService = RetrofitClient.getInstance("https://tallie-image.herokuapp.com/").create(ImageService.class);
+    PaymentService paymentService = RetrofitClient.getInstance("https://tallie.herokuapp.com/").create(PaymentService.class);
+
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 
     RoundedImageView imgBookPicture;
     Button btnAddToCart, btnAddToWishList;
@@ -71,9 +80,66 @@ public class BookDetailActivity extends AppCompatActivity {
         getSellerData(book);
         getAllReviews(book);
 
-        // TODO: 2021-06-27 handle events
+        // TODO: handle events
         btnAddToCart.setOnClickListener(v -> {
+            Date startDate = null, endDate = null;
+            try {
+                startDate = sdf.parse("2021-7-2");
+                endDate = sdf.parse("2025-7-2");
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
 
+            paymentService.registerPaymentCard(
+                    SharedPreferencesHandler.loadAppData(BookDetailActivity.this),
+                    new PaymentCard("12345678912345", "trungvan", startDate, endDate, "611"))
+                    .enqueue(new Callback<String>() {
+                        @Override
+                        public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                            if (response.isSuccessful()) {
+                                Toast.makeText(BookDetailActivity.this, response.body(), Toast.LENGTH_SHORT).show();
+                                bookService.orderBook(
+                                        SharedPreferencesHandler.loadAppData(BookDetailActivity.this),
+                                        new Order(book.getId(), 1, "12345678912345", "trungvan", "0987654321", "default address"))
+                                        .enqueue(new Callback<Order>() {
+                                            @Override
+                                            public void onResponse(@NonNull Call<Order> call, @NonNull Response<Order> response) {
+                                                if (response.isSuccessful()) {
+                                                    Toast.makeText(BookDetailActivity.this, "Order book successfully", Toast.LENGTH_SHORT).show();
+                                                } else {
+                                                    try {
+                                                        assert response.errorBody() != null;
+                                                        Toast.makeText(BookDetailActivity.this, response.errorBody().string(), Toast.LENGTH_SHORT).show();
+                                                        Log.e("TAG", "onResponse: " + response.code() + response.errorBody().string());
+                                                    } catch (IOException e) {
+                                                        e.printStackTrace();
+                                                    }
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onFailure(@NonNull Call<Order> call, @NonNull Throwable t) {
+                                                Toast.makeText(BookDetailActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                                                Log.e("TAG", "onFailure: " + t.getMessage());
+                                            }
+                                        });
+                            } else {
+                                try {
+                                    assert response.errorBody() != null;
+                                    Toast.makeText(BookDetailActivity.this, response.errorBody().string(), Toast.LENGTH_SHORT).show();
+                                    Log.e("TAG", "onResponse: " + response.code() + response.errorBody().string());
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                            Toast.makeText(BookDetailActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                            Log.e("TAG", "onFailure: " + t.getMessage());
+                        }
+                    });
         });
 
         btnAddToWishList.setOnClickListener(v -> bookService.addToWishList(SharedPreferencesHandler.loadAppData(this), new Book(book.getId())).enqueue(new Callback<String>() {
@@ -81,14 +147,6 @@ public class BookDetailActivity extends AppCompatActivity {
             public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     Toast.makeText(BookDetailActivity.this, response.body(), Toast.LENGTH_SHORT).show();
-                } else {
-                    try {
-                        assert response.errorBody() != null;
-                        Toast.makeText(BookDetailActivity.this, "Book has been existed in your wishlist", Toast.LENGTH_SHORT).show();
-                        Log.e("TAG", "onResponse: Book has been existed in your wishlist \t" + response.errorBody().string());
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
                 }
             }
 
@@ -110,13 +168,6 @@ public class BookDetailActivity extends AppCompatActivity {
             public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     Log.i("TAG", "onResponse: " + response.body());
-                } else {
-                    try {
-                        assert response.errorBody() != null;
-                        Log.e("TAG", "onResponse: Product has been existed \t" + response.errorBody().string());
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
                 }
             }
 

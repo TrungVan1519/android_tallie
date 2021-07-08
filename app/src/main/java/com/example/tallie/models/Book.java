@@ -7,8 +7,7 @@ import java.util.ArrayList;
 
 public class Book implements Serializable {
 
-    private int id;
-    private int product_id; // product_id == id
+    private int id, product_id; // are the same
     private String name;
     private String author;
     private double price;

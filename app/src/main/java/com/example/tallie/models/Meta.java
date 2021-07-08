@@ -5,12 +5,12 @@ import androidx.annotation.NonNull;
 import java.io.Serializable;
 
 public class Meta implements Serializable {
-    Integer next_page;
+    Integer next_page, nextPage; // are the same
     int page;
-    int per_page;
-    Integer prev_page;
-    int total_items;
-    int total_pages;
+    int per_page, perPage; // are the same
+    Integer prev_page, prevPage; // are the same
+    int total_items, totalItems; // are the same
+    int total_pages, totalPages; // are the same
 
     public Integer getNext_page() {
         return next_page;
@@ -60,16 +60,61 @@ public class Meta implements Serializable {
         this.total_pages = total_pages;
     }
 
+    public Integer getNextPage() {
+        return nextPage;
+    }
+
+    public void setNextPage(Integer nextPage) {
+        this.nextPage = nextPage;
+    }
+
+    public int getPerPage() {
+        return perPage;
+    }
+
+    public void setPerPage(int perPage) {
+        this.perPage = perPage;
+    }
+
+    public Integer getPrevPage() {
+        return prevPage;
+    }
+
+    public void setPrevPage(Integer prevPage) {
+        this.prevPage = prevPage;
+    }
+
+    public int getTotalItems() {
+        return totalItems;
+    }
+
+    public void setTotalItems(int totalItems) {
+        this.totalItems = totalItems;
+    }
+
+    public int getTotalPages() {
+        return totalPages;
+    }
+
+    public void setTotalPages(int totalPages) {
+        this.totalPages = totalPages;
+    }
+
     @NonNull
     @Override
     public String toString() {
         return "Meta{" +
-                "next_page='" + next_page + '\'' +
+                "next_page=" + next_page +
+                ", nextPage=" + nextPage +
                 ", page=" + page +
                 ", per_page=" + per_page +
-                ", prev_page='" + prev_page + '\'' +
+                ", perPage=" + perPage +
+                ", prev_page=" + prev_page +
+                ", prevPage=" + prevPage +
                 ", total_items=" + total_items +
+                ", totalItems=" + totalItems +
                 ", total_pages=" + total_pages +
+                ", totalPages=" + totalPages +
                 '}';
     }
 }
