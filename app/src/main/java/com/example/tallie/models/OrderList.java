@@ -10,8 +10,6 @@ import java.util.ArrayList;
 public class OrderList implements Serializable {
 
     Meta _meta;
-
-    @SerializedName("orders")
     ArrayList<Order> orders;
 
     public Meta get_meta() {
@@ -22,20 +20,20 @@ public class OrderList implements Serializable {
         this._meta = _meta;
     }
 
-    public ArrayList<Order> getOrderedBooks() {
+    public ArrayList<Order> getOrders() {
         return orders;
     }
 
-    public void setOrderedBooks(ArrayList<Order> orders) {
+    public void setOrders(ArrayList<Order> orders) {
         this.orders = orders;
     }
 
     @NonNull
     @Override
     public String toString() {
-        return "OrderedBookList{" +
+        return "OrderList{" +
                 "_meta=" + _meta +
-                ", orderedBooks=" + orders +
+                ", orders=" + orders +
                 '}';
     }
 }

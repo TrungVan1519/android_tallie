@@ -35,4 +35,11 @@
     <string name="all_categories">All categories</string>
     <string name="reviews">Reviews</string>
     <string name="add_to_wish_list">Add to wish list</string>
+    <string name="add_new_review">Add new review</string>
+    <string name="enter_overview">Enter review overview</string>
+    <string name="enter_review_content">Enter review content</string>
+    <string name="submit">Submit</string>
+    <string name="is_spoiled">is spoiled</string>
+    <string name="new_review">New review</string>
+    <string name="star">Star</string>
 </resources>

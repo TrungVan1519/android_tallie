@@ -14,6 +14,13 @@ public class Review implements Serializable {
     String started_reading;
     String finished_reading;
 
+    public Review(int star, String overview, String content, boolean prevent_spoiler) {
+        this.star = star;
+        this.overview = overview;
+        this.content = content;
+        this.prevent_spoiler = prevent_spoiler;
+    }
+
     public int getId() {
         return id;
     }

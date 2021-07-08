@@ -1,10 +1,15 @@
 package com.example.tallie.activities;
 
+import android.app.Dialog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.WindowManager;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,6 +37,7 @@ import com.makeramen.roundedimageview.RoundedImageView;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -51,7 +57,7 @@ public class BookDetailActivity extends AppCompatActivity {
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 
     RoundedImageView imgBookPicture;
-    Button btnAddToCart, btnAddToWishList;
+    Button btnAddToCart, btnAddToWishList, btnAddNewReview;
     TextView txtBookName, txtBookAuthor, txtBookPrice, txtBookDescription, txtSellerUsername, txtSellerAddress;
     RecyclerView rcvReviews;
 
@@ -69,6 +75,7 @@ public class BookDetailActivity extends AppCompatActivity {
         txtBookDescription = findViewById(R.id.txtBookDescription);
         txtSellerUsername = findViewById(R.id.txtSellerUsername);
         txtSellerAddress = findViewById(R.id.txtSellerAddress);
+        btnAddNewReview = findViewById(R.id.btnAddNewReview);
         rcvReviews = findViewById(R.id.rcvReviews);
 
         Book book = getIntentData();
@@ -97,7 +104,6 @@ public class BookDetailActivity extends AppCompatActivity {
                         @Override
                         public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
                             if (response.isSuccessful()) {
-                                Toast.makeText(BookDetailActivity.this, response.body(), Toast.LENGTH_SHORT).show();
                                 bookService.orderBook(
                                         SharedPreferencesHandler.loadAppData(BookDetailActivity.this),
                                         new Order(book.getId(), 1, "12345678912345", "trungvan", "0987654321", "default address"))
@@ -147,6 +153,8 @@ public class BookDetailActivity extends AppCompatActivity {
             public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     Toast.makeText(BookDetailActivity.this, response.body(), Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(BookDetailActivity.this, "This book is already in your wish list", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -156,6 +164,52 @@ public class BookDetailActivity extends AppCompatActivity {
                 Log.e("TAG", "onFailure: " + t.getMessage());
             }
         }));
+
+        btnAddNewReview.setOnClickListener(v -> {
+            WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+            Dialog dialog = new Dialog(this);
+            dialog.setContentView(R.layout.layout_review_dialog);
+            lp.copyFrom(dialog.getWindow().getAttributes());
+            lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+            lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+            dialog.show();
+            dialog.getWindow().setAttributes(lp);
+
+            TextView txtOverview = dialog.findViewById(R.id.txtOverview);
+            TextView txtContent = dialog.findViewById(R.id.txtContent);
+            Spinner spnStar = dialog.findViewById(R.id.spnStar);
+            CheckBox ckbPreventSpoiler = dialog.findViewById(R.id.ckbPreventSpoiler);
+            Button btnSubmit = dialog.findViewById(R.id.btnSubmit);
+
+            spnStar.setAdapter(new ArrayAdapter<>(BookDetailActivity.this, android.R.layout.simple_list_item_1, Arrays.asList(1, 2, 3, 4, 5)));
+            btnSubmit.setOnClickListener(v1 -> bookService.writeReview(
+                    SharedPreferencesHandler.loadAppData(this), book.getId(),
+                    new Review(Integer.parseInt(spnStar.getSelectedItem().toString()), txtOverview.getText().toString(), txtContent.getText().toString(), ckbPreventSpoiler.isChecked()))
+                    .enqueue(new Callback<Review>() {
+                        @Override
+                        public void onResponse(@NonNull Call<Review> call, @NonNull Response<Review> response) {
+                            if (response.isSuccessful()) {
+                                Toast.makeText(BookDetailActivity.this, "Add review successfully", Toast.LENGTH_SHORT).show();
+                                dialog.dismiss();
+                                getAllReviews(book);
+                            } else {
+                                try {
+                                    assert response.errorBody() != null;
+                                    Toast.makeText(BookDetailActivity.this, response.errorBody().string(), Toast.LENGTH_SHORT).show();
+                                    Log.e("TAG", "onResponse: " + response.errorBody().string());
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(@NonNull Call<Review> call, @NonNull Throwable t) {
+                            Toast.makeText(BookDetailActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                            Log.e("TAG", "onFailure: " + t.getMessage());
+                        }
+                    }));
+        });
     }
 
     private Book getIntentData() {

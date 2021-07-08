@@ -48,7 +48,7 @@ public class CartActivity extends AppCompatActivity {
             public void onResponse(@NonNull Call<OrderList> call, @NonNull Response<OrderList> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     OrderList orderList = response.body();
-                    ArrayList<Order> orders = orderList.getOrderedBooks() == null ? new ArrayList<>() : orderList.getOrderedBooks();
+                    ArrayList<Order> orders = orderList.getOrders() == null ? new ArrayList<>() : orderList.getOrders();
                     rcvCart.setAdapter(new CartAdapter(orders, (v, position) -> getBookDetail(orders.get(position).getProductId())));
                     rcvCart.setLayoutManager(new LinearLayoutManager(CartActivity.this));
                 } else {

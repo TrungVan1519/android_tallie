@@ -5,6 +5,7 @@ import com.example.tallie.models.BookList;
 import com.example.tallie.models.CategoryList;
 import com.example.tallie.models.Order;
 import com.example.tallie.models.OrderList;
+import com.example.tallie.models.Review;
 import com.example.tallie.models.ReviewList;
 import com.example.tallie.models.MostViewedList;
 
@@ -42,6 +43,10 @@ public interface BookService {
     @Headers({"Content-Type: application/json"})
     @GET("api/products/{id}/reviews")
     Call<ReviewList> allReviews(@Path("id") int bookId);
+
+    @Headers({"Content-Type: application/json"})
+    @POST("api/products/{id}/reviews")
+    Call<Review> writeReview(@Header("X-Access-Token") String jwt, @Path("id") int bookId, @Body Review review);
 
     @Headers({"Content-Type: application/json"})
     @POST("api/wishlist")
