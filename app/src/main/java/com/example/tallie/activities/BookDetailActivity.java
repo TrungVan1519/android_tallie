@@ -1,14 +1,18 @@
 package com.example.tallie.activities;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.PopupMenu;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,6 +25,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.tallie.R;
 import com.example.tallie.adapters.ReviewAdapter;
 import com.example.tallie.models.Book;
+import com.example.tallie.models.BookList;
 import com.example.tallie.models.Order;
 import com.example.tallie.models.PaymentCard;
 import com.example.tallie.models.Review;
@@ -32,6 +37,7 @@ import com.example.tallie.services.PaymentService;
 import com.example.tallie.services.UserService;
 import com.example.tallie.utils.RetrofitClient;
 import com.example.tallie.utils.SharedPreferencesHandler;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.makeramen.roundedimageview.RoundedImageView;
 
 import java.io.IOException;
@@ -57,8 +63,9 @@ public class BookDetailActivity extends AppCompatActivity {
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 
     RoundedImageView imgBookPicture;
-    Button btnAddToCart, btnAddToWishList, btnAddNewReview;
+    FloatingActionButton btnAddToCart, btnWishList;
     TextView txtBookName, txtBookAuthor, txtBookPrice, txtBookDescription, txtSellerUsername, txtSellerAddress;
+    Button btnAddNewReview;
     RecyclerView rcvReviews;
 
     @Override
@@ -68,7 +75,7 @@ public class BookDetailActivity extends AppCompatActivity {
 
         imgBookPicture = findViewById(R.id.imgBookPicture);
         btnAddToCart = findViewById(R.id.btnAddToCart);
-        btnAddToWishList = findViewById(R.id.btnAddToWishList);
+        btnWishList = findViewById(R.id.btnWishList);
         txtBookName = findViewById(R.id.txtBookName);
         txtBookAuthor = findViewById(R.id.txtBookAuthor);
         txtBookPrice = findViewById(R.id.txtBookPrice);
@@ -78,10 +85,10 @@ public class BookDetailActivity extends AppCompatActivity {
         btnAddNewReview = findViewById(R.id.btnAddNewReview);
         rcvReviews = findViewById(R.id.rcvReviews);
 
+        if (getIntentData() == null) return;
+
         Book book = getIntentData();
-
-        if (book == null) return;
-
+        new CheckIfExistInWishListTask().execute(book);
         addToSeenList(book);
         populateBookData(book);
         getSellerData(book);
@@ -148,68 +155,59 @@ public class BookDetailActivity extends AppCompatActivity {
                     });
         });
 
-        btnAddToWishList.setOnClickListener(v -> bookService.addToWishList(SharedPreferencesHandler.loadAppData(this), new Book(book.getId())).enqueue(new Callback<String>() {
-            @Override
-            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    Toast.makeText(BookDetailActivity.this, response.body(), Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(BookDetailActivity.this, "This book is already in your wish list", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
-                Toast.makeText(BookDetailActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.e("TAG", "onFailure: " + t.getMessage());
-            }
-        }));
-
-        btnAddNewReview.setOnClickListener(v -> {
-            WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
-            Dialog dialog = new Dialog(this);
-            dialog.setContentView(R.layout.layout_review_dialog);
-            lp.copyFrom(dialog.getWindow().getAttributes());
-            lp.width = WindowManager.LayoutParams.MATCH_PARENT;
-            lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
-            dialog.show();
-            dialog.getWindow().setAttributes(lp);
-
-            TextView txtOverview = dialog.findViewById(R.id.txtOverview);
-            TextView txtContent = dialog.findViewById(R.id.txtContent);
-            Spinner spnStar = dialog.findViewById(R.id.spnStar);
-            CheckBox ckbPreventSpoiler = dialog.findViewById(R.id.ckbPreventSpoiler);
-            Button btnSubmit = dialog.findViewById(R.id.btnSubmit);
-
-            spnStar.setAdapter(new ArrayAdapter<>(BookDetailActivity.this, android.R.layout.simple_list_item_1, Arrays.asList(1, 2, 3, 4, 5)));
-            btnSubmit.setOnClickListener(v1 -> bookService.writeReview(
-                    SharedPreferencesHandler.loadAppData(this), book.getId(),
-                    new Review(Integer.parseInt(spnStar.getSelectedItem().toString()), txtOverview.getText().toString(), txtContent.getText().toString(), ckbPreventSpoiler.isChecked()))
-                    .enqueue(new Callback<Review>() {
-                        @Override
-                        public void onResponse(@NonNull Call<Review> call, @NonNull Response<Review> response) {
-                            if (response.isSuccessful()) {
-                                Toast.makeText(BookDetailActivity.this, "Add review successfully", Toast.LENGTH_SHORT).show();
-                                dialog.dismiss();
-                                getAllReviews(book);
-                            } else {
-                                try {
-                                    assert response.errorBody() != null;
-                                    Toast.makeText(BookDetailActivity.this, response.errorBody().string(), Toast.LENGTH_SHORT).show();
-                                    Log.e("TAG", "onResponse: " + response.errorBody().string());
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
+        btnWishList.setOnClickListener(v -> {
+            if (btnWishList.getBackgroundTintList() == ColorStateList.valueOf(getResources().getColor(R.color.white))) {
+                bookService.addToWishList(SharedPreferencesHandler.loadAppData(this), new Book(book.getId())).enqueue(new Callback<String>() {
+                    @Override
+                    public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            Toast.makeText(BookDetailActivity.this, response.body(), Toast.LENGTH_SHORT).show();
+                            btnWishList.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.purple_200)));
+                        } else {
+                            try {
+                                assert response.errorBody() != null;
+                                Log.e("TAG", "onResponse: " + response.errorBody().string());
+                                Toast.makeText(BookDetailActivity.this, "Add to wish list fail", Toast.LENGTH_SHORT).show();
+                            } catch (IOException e) {
+                                e.printStackTrace();
                             }
                         }
+                    }
 
-                        @Override
-                        public void onFailure(@NonNull Call<Review> call, @NonNull Throwable t) {
-                            Toast.makeText(BookDetailActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
-                            Log.e("TAG", "onFailure: " + t.getMessage());
+                    @Override
+                    public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                        Toast.makeText(BookDetailActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                        Log.e("TAG", "onFailure: " + t.getMessage());
+                    }
+                });
+            } else {
+                bookService.deleteFromWishList(SharedPreferencesHandler.loadAppData(this), new Book(book.getId())).enqueue(new Callback<String>() {
+                    @Override
+                    public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            Toast.makeText(BookDetailActivity.this, response.body(), Toast.LENGTH_SHORT).show();
+                            btnWishList.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.white)));
+                        } else {
+                            try {
+                                assert response.errorBody() != null;
+                                Log.e("TAG", "onResponse: " + response.errorBody().string() + response.code());
+                                Toast.makeText(BookDetailActivity.this, "Delete from wish list fail", Toast.LENGTH_SHORT).show();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
                         }
-                    }));
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                        Toast.makeText(BookDetailActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                        Log.e("TAG", "onFailure: " + t.getMessage());
+                    }
+                });
+            }
         });
+
+        btnAddNewReview.setOnClickListener(v -> addReview(book));
     }
 
     private Book getIntentData() {
@@ -298,7 +296,19 @@ public class BookDetailActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     ReviewList reviewList = response.body();
                     List<Review> reviews = reviewList.getReviews() == null ? new ArrayList<>() : reviewList.getReviews();
-                    rcvReviews.setAdapter(new ReviewAdapter(reviews));
+                    rcvReviews.setAdapter(new ReviewAdapter(reviews, (v, position) -> {
+                        PopupMenu popupMenu = new PopupMenu(BookDetailActivity.this, v);
+                        popupMenu.getMenuInflater().inflate(R.menu.popup_menu, popupMenu.getMenu());
+                        popupMenu.setOnMenuItemClickListener(item -> {
+                            if (item.getItemId() == R.id.menuEditReview) {
+                                updateReview(book);
+                            } else {
+                                deleteReview(book);
+                            }
+                            return false;
+                        });
+                        popupMenu.show();
+                    }));
                     rcvReviews.setLayoutManager(new LinearLayoutManager(BookDetailActivity.this));
                 } else {
                     try {
@@ -317,5 +327,170 @@ public class BookDetailActivity extends AppCompatActivity {
                 Log.e("TAG", "onFailure: " + t.getMessage());
             }
         });
+    }
+
+    private void addReview(Book book) {
+        WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+        Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.layout_review_dialog);
+        lp.copyFrom(dialog.getWindow().getAttributes());
+        lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        dialog.show();
+        dialog.getWindow().setAttributes(lp);
+
+        TextView txtOverview = dialog.findViewById(R.id.txtOverview);
+        TextView txtContent = dialog.findViewById(R.id.txtContent);
+        Spinner spnStar = dialog.findViewById(R.id.spnStar);
+        CheckBox ckbPreventSpoiler = dialog.findViewById(R.id.ckbPreventSpoiler);
+        Button btnSubmit = dialog.findViewById(R.id.btnSubmit);
+
+        spnStar.setAdapter(new ArrayAdapter<>(BookDetailActivity.this, android.R.layout.simple_list_item_1, Arrays.asList(1, 2, 3, 4, 5)));
+        btnSubmit.setOnClickListener(v1 -> bookService.addReview(
+                SharedPreferencesHandler.loadAppData(this), book.getId(),
+                new Review(Integer.parseInt(spnStar.getSelectedItem().toString()), txtOverview.getText().toString(), txtContent.getText().toString(), ckbPreventSpoiler.isChecked()))
+                .enqueue(new Callback<Review>() {
+                    @Override
+                    public void onResponse(@NonNull Call<Review> call, @NonNull Response<Review> response) {
+                        if (response.isSuccessful()) {
+                            Toast.makeText(BookDetailActivity.this, "Add review successfully", Toast.LENGTH_SHORT).show();
+                            dialog.dismiss();
+                            getAllReviews(book);
+                        } else {
+                            try {
+                                assert response.errorBody() != null;
+                                Toast.makeText(BookDetailActivity.this, response.errorBody().string(), Toast.LENGTH_SHORT).show();
+                                Log.e("TAG", "onResponse: " + response.errorBody().string());
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<Review> call, @NonNull Throwable t) {
+                        Toast.makeText(BookDetailActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                        Log.e("TAG", "onFailure: " + t.getMessage());
+                    }
+                }));
+    }
+
+    private void updateReview(Book book) {
+        WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+        Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.layout_review_dialog);
+        lp.copyFrom(dialog.getWindow().getAttributes());
+        lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        dialog.show();
+        dialog.getWindow().setAttributes(lp);
+
+        TextView txtOverview = dialog.findViewById(R.id.txtOverview);
+        TextView txtContent = dialog.findViewById(R.id.txtContent);
+        Spinner spnStar = dialog.findViewById(R.id.spnStar);
+        CheckBox ckbPreventSpoiler = dialog.findViewById(R.id.ckbPreventSpoiler);
+        Button btnSubmit = dialog.findViewById(R.id.btnSubmit);
+
+        spnStar.setAdapter(new ArrayAdapter<>(BookDetailActivity.this, android.R.layout.simple_list_item_1, Arrays.asList(1, 2, 3, 4, 5)));
+        btnSubmit.setOnClickListener(v1 -> bookService.updateReview(
+                SharedPreferencesHandler.loadAppData(this), book.getId(),
+                new Review(Integer.parseInt(spnStar.getSelectedItem().toString()), txtOverview.getText().toString(), txtContent.getText().toString(), ckbPreventSpoiler.isChecked()))
+                .enqueue(new Callback<Review>() {
+                    @Override
+                    public void onResponse(@NonNull Call<Review> call, @NonNull Response<Review> response) {
+                        if (response.isSuccessful()) {
+                            Toast.makeText(BookDetailActivity.this, "Update review successfully", Toast.LENGTH_SHORT).show();
+                            dialog.dismiss();
+                            getAllReviews(book);
+                        } else {
+                            try {
+                                assert response.errorBody() != null;
+                                Toast.makeText(BookDetailActivity.this, response.errorBody().string(), Toast.LENGTH_SHORT).show();
+                                Log.e("TAG", "onResponse: " + response.errorBody().string());
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<Review> call, @NonNull Throwable t) {
+                        Toast.makeText(BookDetailActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                        Log.e("TAG", "onFailure: " + t.getMessage());
+                    }
+                }));
+    }
+
+    private void deleteReview(Book book) {
+        bookService.deleteReview(SharedPreferencesHandler.loadAppData(this), book.getId()).enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                if (response.isSuccessful()) {
+                    Toast.makeText(BookDetailActivity.this, "Delete review successfully", Toast.LENGTH_SHORT).show();
+                    getAllReviews(book);
+                } else {
+                    try {
+                        assert response.errorBody() != null;
+                        Toast.makeText(BookDetailActivity.this, response.errorBody().string(), Toast.LENGTH_SHORT).show();
+                        Log.e("TAG", "onResponse: " + response.errorBody().string());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                Toast.makeText(BookDetailActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                Log.e("TAG", "onFailure: " + t.getMessage());
+            }
+        });
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    class CheckIfExistInWishListTask extends AsyncTask<Book, Void, Void> {
+
+        CheckIfExistInWishListTask() {
+            super();
+        }
+
+        @Override
+        protected Void doInBackground(Book... params) {
+            try {
+                boolean isExist = false;
+                Response<BookList> response = bookService.getWishList(SharedPreferencesHandler.loadAppData(BookDetailActivity.this)).execute();
+                if (response.isSuccessful() && response.body() != null) {
+                    BookList bookList = response.body();
+                    ArrayList<Book> books = bookList.getProducts() == null ? new ArrayList<>() : bookList.getProducts();
+
+                    if (books.size() > 0) {
+                        for (Book b : books) {
+                            if (b.getId() == params[0].getId()) {
+                                isExist = true;
+                                break;
+                            }
+                        }
+                    }
+                } else {
+                    try {
+                        assert response.errorBody() != null;
+                        Toast.makeText(BookDetailActivity.this, response.errorBody().string(), Toast.LENGTH_SHORT).show();
+                        Log.e("TAG", "doInBackground: " + response.errorBody().string());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                if (isExist) {
+                    btnWishList.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.purple_200)));
+                } else {
+                    btnWishList.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.white)));
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
     }
 }

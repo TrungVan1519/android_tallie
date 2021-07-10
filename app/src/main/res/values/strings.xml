@@ -42,4 +42,6 @@
     <string name="is_spoiled">is spoiled</string>
     <string name="new_review">New review</string>
     <string name="star">Star</string>
+    <string name="edit_review">Edit review</string>
+    <string name="delete_review">Delete review</string>
 </resources>

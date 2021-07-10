@@ -30,23 +30,23 @@
             android:gravity="center"
             android:orientation="horizontal">
 
-            <Button
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/btnAddToCart"
-                style="@style/Widget.AppCompat.Button.Colored"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginVertical="@dimen/gap"
-                android:text="@string/add_to_cart"
-                android:textAllCaps="false" />
+                android:layout_margin="@dimen/gap"
+                android:contentDescription="@string/image_description"
+                android:src="@drawable/ic_baseline_shopping_cart_24"
+                app:backgroundTint="@color/white" />
 
-            <Button
-                android:id="@+id/btnAddToWishList"
-                style="@style/Widget.AppCompat.Button.Colored"
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/btnWishList"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginVertical="@dimen/gap"
-                android:text="@string/add_to_wish_list"
-                android:textAllCaps="false" />
+                android:layout_margin="@dimen/gap"
+                android:contentDescription="@string/image_description"
+                android:src="@drawable/ic_baseline_favorite_24"
+                app:backgroundTint="@color/white" />
         </LinearLayout>
 
         <LinearLayout

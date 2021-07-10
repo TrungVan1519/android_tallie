@@ -26,12 +26,14 @@ import retrofit2.Response;
 
 public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder> {
 
+    ItemClickListener itemClickListener;
     UserService userService = RetrofitClient.getInstance("https://tallie.herokuapp.com/").create(UserService.class);
     List<Review> reviews;
 
-    public ReviewAdapter(List<Review> reviews) {
+    public ReviewAdapter(List<Review> reviews, ItemClickListener itemClickListener) {
         super();
         this.reviews = reviews;
+        this.itemClickListener = itemClickListener;
     }
 
     @NonNull
@@ -68,6 +70,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
 
         holder.txtReviewRating.setText(String.valueOf(reviews.get(position).getStar()));
         holder.txtReviewContent.setText(reviews.get(position).getContent());
+        holder.itemView.setOnClickListener(v -> itemClickListener.onClick(v, position));
     }
 
     @Override
@@ -88,5 +91,9 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
             txtReviewRating = itemView.findViewById(R.id.txtReviewRating);
             txtReviewContent = itemView.findViewById(R.id.txtReviewContent);
         }
+    }
+
+    public interface ItemClickListener {
+        void onClick(View v, int position);
     }
 }
