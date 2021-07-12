@@ -54,70 +54,35 @@
             android:gravity="center"
             android:orientation="horizontal">
 
-            <Button
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/btnLogout"
-                style="@style/Widget.AppCompat.Button.Colored"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/gap"
-                android:text="@string/log_out"
-                android:textAllCaps="false" />
+                android:layout_gravity="end|top"
+                android:layout_margin="@dimen/gap"
+                android:contentDescription="@string/image_description"
+                android:src="@drawable/ic_baseline_sensor_door_24"
+                app:backgroundTint="@color/white" />
 
-            <Button
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/btnSetting"
-                style="@style/Widget.AppCompat.Button.Colored"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/gap"
-                android:text="@string/setting"
-                android:textAllCaps="false" />
-        </LinearLayout>
+                android:layout_gravity="end|top"
+                android:layout_margin="@dimen/gap"
+                android:contentDescription="@string/image_description"
+                android:src="@drawable/ic_baseline_build_24"
+                app:backgroundTint="@color/white" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/gap"
-            android:orientation="vertical">
-
-            <LinearLayout
-                android:layout_width="match_parent"
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/btnUpdatePayment"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/my_orders"
-                    android:textColor="@color/text_primary"
-                    android:textSize="@dimen/title" />
-
-                <com.google.android.material.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/btnPayCart"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end|top"
-                    android:layout_margin="@dimen/gap"
-                    android:contentDescription="@string/image_description"
-                    android:src="@drawable/ic_baseline_payments_24"
-                    app:backgroundTint="@color/white" />
-
-                <com.google.android.material.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/btnClearCart"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end|top"
-                    android:layout_margin="@dimen/gap"
-                    android:contentDescription="@string/image_description"
-                    android:src="@drawable/ic_baseline_clear_24"
-                    app:backgroundTint="@color/white" />
-            </LinearLayout>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rcvMyOrders"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_gravity="end|top"
+                android:layout_margin="@dimen/gap"
+                android:contentDescription="@string/image_description"
+                android:src="@drawable/ic_baseline_payments_24"
+                app:backgroundTint="@color/white" />
         </LinearLayout>
 
         <LinearLayout

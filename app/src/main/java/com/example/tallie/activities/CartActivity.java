@@ -3,6 +3,9 @@ package com.example.tallie.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -105,5 +108,40 @@ public class CartActivity extends AppCompatActivity {
                 Log.e("TAG", "onFailure: " + t.getMessage());
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.option_menu, menu);
+
+        final SearchView searchView = (SearchView) menu.findItem(R.id.navItemSearch).getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                // IMPORTANT: prevent onQueryTextSubmit() method called twice
+                searchView.clearFocus();
+
+                String msg = "Submit: " + query;
+                Toast.makeText(CartActivity.this, msg, Toast.LENGTH_SHORT).show();
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return true;
+            }
+        });
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.navItemCart) {
+            startActivity(new Intent(this, CartActivity.class));
+            finish();
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }
