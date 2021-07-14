@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.SearchView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -37,6 +38,8 @@ public class CartActivity extends AppCompatActivity {
     BookService bookService = RetrofitClient.getInstance("https://tallie.herokuapp.com/").create(BookService.class);
     OrderService orderService = RetrofitClient.getInstance("https://tallie-shipping.herokuapp.com/").create(OrderService.class);
 
+    int orderCount = 0;
+    TextView txtCart;
     RecyclerView rcvCart;
 
     @Override
@@ -44,6 +47,7 @@ public class CartActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cart);
 
+        txtCart = findViewById(R.id.txtCart);
         rcvCart = findViewById(R.id.rcvCart);
 
         orderService.allOrders(SharedPreferencesHandler.loadAppData(this)).enqueue(new Callback<OrderList>() {
@@ -54,6 +58,9 @@ public class CartActivity extends AppCompatActivity {
                     ArrayList<Order> orders = orderList.getOrders() == null ? new ArrayList<>() : orderList.getOrders();
                     rcvCart.setAdapter(new CartAdapter(orders, (v, position) -> getBookDetail(orders.get(position).getProductId())));
                     rcvCart.setLayoutManager(new LinearLayoutManager(CartActivity.this));
+
+                    orderCount = orders.size();
+                    txtCart.setText(txtCart.getText().toString().concat(": " + orderCount));
                 } else {
                     try {
                         assert response.errorBody() != null;
@@ -77,7 +84,13 @@ public class CartActivity extends AppCompatActivity {
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 if (rcvCart.getAdapter() == null) return;
                 CartAdapter adapter = (CartAdapter) rcvCart.getAdapter();
-                adapter.deleteItem(CartActivity.this, viewHolder.getAdapterPosition());
+                boolean isSuccess = adapter.deleteItem(CartActivity.this, viewHolder.getAdapterPosition());
+                if (isSuccess) {
+                    txtCart.setText(txtCart.getText().toString().concat(": " + --orderCount));
+                } else {
+                    finish();
+                    startActivity(getIntent());
+                }
             }
         }).attachToRecyclerView(rcvCart);
     }

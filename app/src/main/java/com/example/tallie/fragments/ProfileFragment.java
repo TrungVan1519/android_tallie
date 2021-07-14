@@ -141,8 +141,30 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btnLogout:
-                SharedPreferencesHandler.saveAppData(requireActivity(), "");
+                paymentService.deregisterPaymentCard(SharedPreferencesHandler.loadAppData(requireContext())).enqueue(new Callback<String>() {
+                    @Override
+                    public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                        if (response.isSuccessful()) {
+                            Log.i("TAG", "onResponse: " + response.body());
+                        } else {
+                            try {
+                                assert response.errorBody() != null;
+                                Toast.makeText(requireContext(), response.errorBody().string(), Toast.LENGTH_SHORT).show();
+                                Log.e("TAG", "onResponse: " + response.code() + response.errorBody().string());
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
 
+                    @Override
+                    public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                        Toast.makeText(requireContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
+                        Log.e("TAG", "onFailure: " + t.getMessage());
+                    }
+                });
+
+                SharedPreferencesHandler.clearData(requireContext());
                 Intent i = new Intent(getActivity(), LoginActivity.class);
                 i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(i);

@@ -64,4 +64,26 @@ public class SharedPreferencesHandler {
         editor.putString(Constants.PAYMENT_CVC, paymentCVC);
         editor.apply();
     }
+
+    public static void clearData(Context context) {
+        SharedPreferences preferences = context.getSharedPreferences(Constants.FILENAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+
+        // clear jwt
+        editor.putString(Constants.JWT, "");
+
+        // clear user info
+        editor.putString(Constants.NAME, "");
+        editor.putString(Constants.USERNAME, "");
+        editor.putString(Constants.EMAIL, "");
+        editor.putString(Constants.PHONE, "");
+
+        // clear payment
+        editor.putString(Constants.PAYMENT_CARD_NUMBER, "");
+        editor.putString(Constants.PAYMENT_NAME, "");
+        editor.putString(Constants.PAYMENT_START_DATE, "");
+        editor.putString(Constants.PAYMENT_END_DATE, "");
+        editor.putString(Constants.PAYMENT_CVC, "");
+        editor.apply();
+    }
 }

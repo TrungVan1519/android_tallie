@@ -114,7 +114,8 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
         return orders.size();
     }
 
-    public void deleteItem(Context context, int position) {
+    public boolean deleteItem(Context context, int position) {
+        final boolean[] result = {false};
         orderService.deleteOrder(SharedPreferencesHandler.loadAppData(context), orders.get(position).get_id()).enqueue(new Callback<Order>() {
             @Override
             public void onResponse(@NonNull Call<Order> call, @NonNull Response<Order> response) {
@@ -122,6 +123,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
                     orders.remove(position);
                     notifyItemRemoved(position);
                     Toast.makeText(context, "Delete successfully", Toast.LENGTH_SHORT).show();
+                    result[0] = true;
                 } else {
                     try {
                         assert response.errorBody() != null;
@@ -139,6 +141,8 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
                 Log.e("TAG", "onFailure: " + t.getMessage());
             }
         });
+
+        return result[0];
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
