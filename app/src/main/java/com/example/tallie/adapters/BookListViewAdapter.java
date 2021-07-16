@@ -17,10 +17,11 @@ import androidx.annotation.Nullable;
 
 import com.example.tallie.R;
 import com.example.tallie.models.Book;
+import com.example.tallie.models.Error;
 import com.example.tallie.services.ImageService;
 import com.example.tallie.utils.RetrofitClient;
+import com.google.gson.Gson;
 
-import java.io.IOException;
 import java.util.List;
 
 import okhttp3.ResponseBody;
@@ -62,14 +63,9 @@ public class BookListViewAdapter<T> extends ArrayAdapter<T> {
                     if (response.isSuccessful() && response.body() != null) {
                         Bitmap image = BitmapFactory.decodeStream(response.body().byteStream());
                         holder.imgBookPicture.setImageBitmap(image);
-                    } else {
-                        try {
-                            assert response.errorBody() != null;
-                            Toast.makeText(parent.getContext(), response.errorBody().string(), Toast.LENGTH_SHORT).show();
-                            Log.e("TAG", "onResponse: " + response.errorBody().string());
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+                    } else if (response.errorBody() != null) {
+                        Error error = new Gson().fromJson(response.errorBody().charStream(), Error.class);
+                        Toast.makeText(parent.getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 }
 

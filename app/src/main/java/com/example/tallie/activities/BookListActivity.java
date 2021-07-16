@@ -13,10 +13,11 @@ import com.example.tallie.R;
 import com.example.tallie.adapters.BookListViewAdapter;
 import com.example.tallie.models.Book;
 import com.example.tallie.models.BookList;
+import com.example.tallie.models.Error;
 import com.example.tallie.services.BookService;
 import com.example.tallie.utils.RetrofitClient;
+import com.google.gson.Gson;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import retrofit2.Call;
@@ -38,7 +39,7 @@ public class BookListActivity extends AppCompatActivity {
 
         // TODO: handle events
         lsvBooks = findViewById(R.id.lsvBooks);
-        lsvBooks.setAdapter(new BookListViewAdapter<>(this, R.layout.layout_book_row, books));
+        lsvBooks.setAdapter(new BookListViewAdapter<>(this, R.layout.row_book, books));
         lsvBooks.setOnItemClickListener((parent, view, position, id) -> getBookDetail(books.get(position).getId()));
     }
 
@@ -51,14 +52,9 @@ public class BookListActivity extends AppCompatActivity {
                     Intent i = new Intent(BookListActivity.this, BookDetailActivity.class);
                     i.putExtra("book", book);
                     startActivity(i);
-                } else {
-                    try {
-                        assert response.errorBody() != null;
-                        Toast.makeText(BookListActivity.this, response.errorBody().string(), Toast.LENGTH_SHORT).show();
-                        Log.e("TAG", "onResponse: " + response.errorBody().string());
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                } else if (response.errorBody() != null) {
+                    Error error = new Gson().fromJson(response.errorBody().charStream(), Error.class);
+                    Toast.makeText(BookListActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
 

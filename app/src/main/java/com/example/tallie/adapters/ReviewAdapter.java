@@ -11,13 +11,14 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tallie.R;
+import com.example.tallie.models.Error;
 import com.example.tallie.models.Review;
 import com.example.tallie.models.User;
 import com.example.tallie.services.UserService;
 import com.example.tallie.utils.RetrofitClient;
+import com.google.gson.Gson;
 import com.makeramen.roundedimageview.RoundedImageView;
 
-import java.io.IOException;
 import java.util.List;
 
 import retrofit2.Call;
@@ -39,7 +40,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_review_row, parent, false));
+        return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.row_review, parent, false));
     }
 
     @Override
@@ -50,14 +51,9 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
                 if (response.isSuccessful() && response.body() != null) {
                     User user = response.body();
                     holder.txtReviewerUsername.setText(user.getUsername());
-                } else {
-                    try {
-                        assert response.errorBody() != null;
-                        Toast.makeText(holder.itemView.getContext(), response.errorBody().string(), Toast.LENGTH_SHORT).show();
-                        Log.e("TAG", "onResponse: " + response.errorBody().string());
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                } else if (response.errorBody() != null) {
+                    Error error = new Gson().fromJson(response.errorBody().charStream(), Error.class);
+                    Toast.makeText(holder.itemView.getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -81,7 +77,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
     static class ViewHolder extends RecyclerView.ViewHolder {
 
         RoundedImageView imgReviewerAvatar;
-        TextView txtReviewerUsername,txtReviewContent, txtReviewRating;
+        TextView txtReviewerUsername, txtReviewContent, txtReviewRating;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);

@@ -3,8 +3,8 @@ package com.example.tallie.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SharedPreferencesHandler {
 
@@ -25,13 +25,15 @@ public class SharedPreferencesHandler {
         editor.apply();
     }
 
-    public static List<String> loadUserInfo(Context context) {
+    public static Map<String, String> loadUserInfo(Context context) {
         SharedPreferences preferences = context.getSharedPreferences(Constants.FILENAME, Context.MODE_PRIVATE);
-        return Arrays.asList(
-                preferences.getString(Constants.NAME, ""),
-                preferences.getString(Constants.USERNAME, ""),
-                preferences.getString(Constants.EMAIL, ""),
-                preferences.getString(Constants.PHONE, ""));
+        HashMap<String, String> userInfo = new HashMap<>();
+        userInfo.put(Constants.NAME, preferences.getString(Constants.NAME, ""));
+        userInfo.put(Constants.USERNAME, preferences.getString(Constants.USERNAME, ""));
+        userInfo.put(Constants.EMAIL, preferences.getString(Constants.EMAIL, ""));
+        userInfo.put(Constants.PHONE, preferences.getString(Constants.PHONE, ""));
+
+        return userInfo;
     }
 
     public static void saveUserInfo(Context context, String name, String username, String email, String phone) {
@@ -44,14 +46,16 @@ public class SharedPreferencesHandler {
         editor.apply();
     }
 
-    public static List<String> loadPayment(Context context) {
+    public static Map<String, String> loadPayment(Context context) {
         SharedPreferences preferences = context.getSharedPreferences(Constants.FILENAME, Context.MODE_PRIVATE);
-        return Arrays.asList(
-                preferences.getString(Constants.PAYMENT_CARD_NUMBER, ""),
-                preferences.getString(Constants.PAYMENT_NAME, ""),
-                preferences.getString(Constants.PAYMENT_START_DATE, ""),
-                preferences.getString(Constants.PAYMENT_END_DATE, ""),
-                preferences.getString(Constants.PAYMENT_CVC, ""));
+        HashMap<String, String> payment = new HashMap<>();
+        payment.put(Constants.PAYMENT_CARD_NUMBER, preferences.getString(Constants.PAYMENT_CARD_NUMBER, ""));
+        payment.put(Constants.PAYMENT_NAME, preferences.getString(Constants.PAYMENT_NAME, ""));
+        payment.put(Constants.PAYMENT_START_DATE, preferences.getString(Constants.PAYMENT_START_DATE, ""));
+        payment.put(Constants.PAYMENT_END_DATE, preferences.getString(Constants.PAYMENT_END_DATE, ""));
+        payment.put(Constants.PAYMENT_CVC, preferences.getString(Constants.PAYMENT_CVC, ""));
+
+        return payment;
     }
 
     public static void savePayment(Context context, String paymentCardNumber, String paymentName, String paymentStartDate, String paymentEndDate, String paymentCVC) {

@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.tallie.R;
 import com.example.tallie.adapters.CartAdapter;
 import com.example.tallie.models.Book;
+import com.example.tallie.models.Error;
 import com.example.tallie.models.Order;
 import com.example.tallie.models.OrderList;
 import com.example.tallie.services.BookService;
@@ -25,8 +26,8 @@ import com.example.tallie.services.OrderService;
 import com.example.tallie.utils.RetrofitClient;
 import com.example.tallie.utils.SharedPreferencesHandler;
 import com.example.tallie.utils.SwipeToDeleteCallback;
+import com.google.gson.Gson;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import retrofit2.Call;
@@ -61,14 +62,9 @@ public class CartActivity extends AppCompatActivity {
 
                     orderCount = orders.size();
                     txtCart.setText(txtCart.getText().toString().concat(": " + orderCount));
-                } else {
-                    try {
-                        assert response.errorBody() != null;
-                        Toast.makeText(CartActivity.this, response.errorBody().string(), Toast.LENGTH_SHORT).show();
-                        Log.e("TAG", "onResponse: " + response.errorBody().string());
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                } else if (response.errorBody() != null) {
+                    Error error = new Gson().fromJson(response.errorBody().charStream(), Error.class);
+                    Toast.makeText(CartActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -104,14 +100,9 @@ public class CartActivity extends AppCompatActivity {
                     Intent i = new Intent(CartActivity.this, BookDetailActivity.class);
                     i.putExtra("book", book);
                     startActivity(i);
-                } else {
-                    try {
-                        assert response.errorBody() != null;
-                        Toast.makeText(CartActivity.this, response.errorBody().string(), Toast.LENGTH_SHORT).show();
-                        Log.e("TAG", "onResponse: " + response.errorBody().string());
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                } else if (response.errorBody() != null) {
+                    Error error = new Gson().fromJson(response.errorBody().charStream(), Error.class);
+                    Toast.makeText(CartActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
 

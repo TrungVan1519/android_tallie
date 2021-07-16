@@ -1,7 +1,6 @@
 package com.example.tallie.activities;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -11,7 +10,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -24,21 +22,22 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.example.tallie.R;
+import com.example.tallie.models.Error;
 import com.example.tallie.models.User;
 import com.example.tallie.services.UserService;
 import com.example.tallie.utils.RetrofitClient;
+import com.google.gson.Gson;
 import com.makeramen.roundedimageview.RoundedImageView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class SignUpActivity extends AppCompatActivity implements View.OnClickListener {
+public class SignUpActivity extends AppCompatActivity {
 
     final int GALLERY_REQUEST = 2;
     final int GALLERY_CODE = 19;
@@ -65,50 +64,36 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         btnBack = findViewById(R.id.btnBack);
 
         // TODO: handle e
-        imgAvatar.setOnClickListener(this);
-        btnSignUp.setOnClickListener(this);
-        btnBack.setOnClickListener(this);
+        imgAvatar.setOnClickListener(v -> getImageFromGallery());
+        btnSignUp.setOnClickListener(v -> signup());
+        btnBack.setOnClickListener(v -> finish());
     }
 
-    @SuppressLint("NonConstantResourceId")
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.imgAvatar:
-                getImageFromGallery();
-                break;
-            case R.id.btnSignUp:
-                if (txtName.getText().toString().isEmpty()
-                        || txtUsername.getText().toString().isEmpty()
-                        || txtEmail.getText().toString().isEmpty()
-                        || txtPassword.getText().toString().isEmpty()
-                        || txtPhone.getText().toString().isEmpty()) {
-                    Toast.makeText(this, "Empty value. Check them before trying again", Toast.LENGTH_SHORT).show();
-                    return;
-                }
+    private void signup() {
+        if (txtName.getText().toString().isEmpty()
+                || txtUsername.getText().toString().isEmpty()
+                || txtEmail.getText().toString().isEmpty()
+                || txtPassword.getText().toString().isEmpty()
+                || txtPhone.getText().toString().isEmpty()) {
+            Toast.makeText(this, "Empty value. Check them before trying again", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-                Call<User> callback = userService.registerUser(
-                        new User(txtName.getText().toString(),
-                                txtUsername.getText().toString(),
-                                txtPassword.getText().toString(),
-                                txtEmail.getText().toString(),
-                                txtPhone.getText().toString())
-                );
-
-                callback.enqueue(new Callback<User>() {
+        userService.registerUser(new User(
+                txtName.getText().toString(),
+                txtUsername.getText().toString(),
+                txtPassword.getText().toString(),
+                txtEmail.getText().toString(),
+                txtPhone.getText().toString()))
+                .enqueue(new Callback<User>() {
                     @Override
                     public void onResponse(@NonNull Call<User> call, @NonNull Response<User> response) {
                         if (response.isSuccessful()) {
                             startActivity(new Intent(SignUpActivity.this, LoginActivity.class));
                             finish();
-                        } else {
-                            try {
-                                assert response.errorBody() != null;
-                                Toast.makeText(SignUpActivity.this, response.errorBody().string(), Toast.LENGTH_SHORT).show();
-                                Log.e("TAG", "onResponse: " + response.errorBody().string());
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
+                        } else if (response.errorBody() != null) {
+                            Error error = new Gson().fromJson(response.errorBody().charStream(), Error.class);
+                            Toast.makeText(SignUpActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     }
 
@@ -118,13 +103,6 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                         Log.e("TAG", "onFailure: " + t.getMessage());
                     }
                 });
-                break;
-            case R.id.btnBack:
-                finish();
-                break;
-            default:
-                break;
-        }
     }
 
     private void getImageFromGallery() {

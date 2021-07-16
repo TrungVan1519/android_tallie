@@ -15,10 +15,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tallie.R;
 import com.example.tallie.models.Book;
+import com.example.tallie.models.Error;
 import com.example.tallie.services.ImageService;
 import com.example.tallie.utils.RetrofitClient;
+import com.google.gson.Gson;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import okhttp3.ResponseBody;
@@ -40,7 +41,7 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.ViewHolder> {
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_book_row, parent, false));
+        return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.row_book, parent, false));
     }
 
     @Override
@@ -54,14 +55,9 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.ViewHolder> {
                     if (response.isSuccessful() && response.body() != null) {
                         Bitmap image = BitmapFactory.decodeStream(response.body().byteStream());
                         holder.imgBookPicture.setImageBitmap(image);
-                    } else {
-                        try {
-                            assert response.errorBody() != null;
-                            Toast.makeText(holder.itemView.getContext(), response.errorBody().string(), Toast.LENGTH_SHORT).show();
-                            Log.e("TAG", "onResponse: " + response.errorBody().string());
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+                    } else if (response.errorBody() != null) {
+                        Error error = new Gson().fromJson(response.errorBody().charStream(), Error.class);
+                        Toast.makeText(holder.itemView.getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 }
 

@@ -16,14 +16,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tallie.R;
 import com.example.tallie.models.Book;
+import com.example.tallie.models.Error;
 import com.example.tallie.models.Order;
 import com.example.tallie.services.BookService;
 import com.example.tallie.services.ImageService;
 import com.example.tallie.services.OrderService;
 import com.example.tallie.utils.RetrofitClient;
 import com.example.tallie.utils.SharedPreferencesHandler;
+import com.google.gson.Gson;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import okhttp3.ResponseBody;
@@ -47,7 +48,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_book_row, parent, false));
+        return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.row_book, parent, false));
     }
 
     @Override
@@ -67,14 +68,9 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
                                 if (response.isSuccessful() && response.body() != null) {
                                     Bitmap image = BitmapFactory.decodeStream(response.body().byteStream());
                                     holder.imgBookPicture.setImageBitmap(image);
-                                } else {
-                                    try {
-                                        assert response.errorBody() != null;
-                                        Toast.makeText(holder.itemView.getContext(), response.errorBody().string(), Toast.LENGTH_SHORT).show();
-                                        Log.e("TAG", "onResponse: " + response.errorBody().string());
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                    }
+                                } else if (response.errorBody() != null) {
+                                    Error error = new Gson().fromJson(response.errorBody().charStream(), Error.class);
+                                    Toast.makeText(holder.itemView.getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
                                 }
                             }
 
@@ -90,14 +86,9 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
                     holder.txtBookAuthor.setText(book.getAuthor());
                     holder.txtBookPrice.setText(String.valueOf(book.getPrice()));
                     holder.itemView.setOnClickListener(v -> itemClickListener.onClick(v, position));
-                } else {
-                    try {
-                        assert response.errorBody() != null;
-                        Toast.makeText(holder.itemView.getContext(), response.errorBody().string(), Toast.LENGTH_SHORT).show();
-                        Log.e("TAG", "onResponse: " + response.errorBody().string());
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                } else if (response.errorBody() != null) {
+                    Error error = new Gson().fromJson(response.errorBody().charStream(), Error.class);
+                    Toast.makeText(holder.itemView.getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -124,14 +115,9 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
                     notifyItemRemoved(position);
                     Toast.makeText(context, "Delete successfully", Toast.LENGTH_SHORT).show();
                     result[0] = true;
-                } else {
-                    try {
-                        assert response.errorBody() != null;
-                        Toast.makeText(context, response.errorBody().string(), Toast.LENGTH_SHORT).show();
-                        Log.e("TAG", "onResponse: " + response.errorBody().string());
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                } else if (response.errorBody() != null) {
+                    Error error = new Gson().fromJson(response.errorBody().charStream(), Error.class);
+                    Toast.makeText(context, error.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
 
