@@ -85,12 +85,12 @@ public class ProfileFragment extends Fragment {
         btnSeen = view.findViewById(R.id.btnSeen);
         rcvMyCollection = view.findViewById(R.id.rcvMyCollection);
 
-        Map<String, String> userInfo = SharedPreferencesHandler.loadUserInfo(requireContext());
+        Map<String, String> userInfo = SharedPreferencesHandler.loadUserInfo(getContext());
         if (Objects.requireNonNull(userInfo.get(Constants.NAME)).isEmpty()
                 || Objects.requireNonNull(userInfo.get(Constants.USERNAME)).isEmpty()
                 || Objects.requireNonNull(userInfo.get(Constants.EMAIL)).isEmpty()
                 || Objects.requireNonNull(userInfo.get(Constants.PHONE)).isEmpty()) {
-            userService.getUserProfile(SharedPreferencesHandler.loadAppData(requireContext())).enqueue(new Callback<User>() {
+            userService.getUserProfile(SharedPreferencesHandler.loadAppData(getContext())).enqueue(new Callback<User>() {
                 @Override
                 public void onResponse(@NonNull Call<User> call, @NonNull Response<User> response) {
                     if (response.isSuccessful() && response.body() != null) {
@@ -100,16 +100,16 @@ public class ProfileFragment extends Fragment {
                         txtUsername.setText(user.getUsername());
                         txtEmail.setText(user.getEmail());
 
-                        SharedPreferencesHandler.saveUserInfo(requireContext(), user.getName(), user.getUsername(), user.getEmail(), user.getPhone());
+                        SharedPreferencesHandler.saveUserInfo(getContext(), user.getName(), user.getUsername(), user.getEmail(), user.getPhone());
                     } else if (response.errorBody() != null) {
                         Error error = new Gson().fromJson(response.errorBody().charStream(), Error.class);
-                        Toast.makeText(requireContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 }
 
                 @Override
                 public void onFailure(@NonNull Call<User> call, @NonNull Throwable t) {
-                    Toast.makeText(requireContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
                     Log.e("TAG", "onFailure: " + t.getMessage());
                 }
             });
@@ -139,25 +139,22 @@ public class ProfileFragment extends Fragment {
     }
 
     private void deregisterPaymentCard() {
-        paymentService.deregisterPaymentCard(SharedPreferencesHandler.loadAppData(requireContext())).enqueue(new Callback<String>() {
+        paymentService.deregisterPaymentCard(SharedPreferencesHandler.loadAppData(getContext())).enqueue(new Callback<String>() {
             @Override
             public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     Log.i("TAG", "onResponse: " + response.body());
-                } else if (response.errorBody() != null) {
-                    Error error = new Gson().fromJson(response.errorBody().charStream(), Error.class);
-                    Toast.makeText(requireContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
-                Toast.makeText(requireContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
                 Log.e("TAG", "onFailure: " + t.getMessage());
             }
         });
 
-        SharedPreferencesHandler.clearData(requireContext());
+        SharedPreferencesHandler.clearData(getContext());
         Intent i = new Intent(getActivity(), LoginActivity.class);
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(i);
@@ -166,7 +163,7 @@ public class ProfileFragment extends Fragment {
 
     private void updateUserProfile() {
         WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
-        Dialog dialog = new Dialog(requireContext());
+        Dialog dialog = new Dialog(getContext());
         dialog.setContentView(R.layout.dialog_user_profile);
         lp.copyFrom(dialog.getWindow().getAttributes());
         lp.width = WindowManager.LayoutParams.MATCH_PARENT;
@@ -184,7 +181,7 @@ public class ProfileFragment extends Fragment {
         Button btnCancel = dialog.findViewById(R.id.btnCancel);
 
         // TODO: binding data
-        Map<String, String> userInfo = SharedPreferencesHandler.loadUserInfo(requireContext());
+        Map<String, String> userInfo = SharedPreferencesHandler.loadUserInfo(getContext());
         txtName.setText(userInfo.get(Constants.NAME));
         txtEmail.setText(userInfo.get(Constants.EMAIL));
         txtPhone.setText(userInfo.get(Constants.PHONE));
@@ -192,7 +189,7 @@ public class ProfileFragment extends Fragment {
         // TODO: handle events
         btnCancel.setOnClickListener(v1 -> dialog.dismiss());
         btnOK.setOnClickListener(v1 -> userService.updateUserProfile(
-                SharedPreferencesHandler.loadAppData(requireContext()),
+                SharedPreferencesHandler.loadAppData(getContext()),
                 new User(
                         txtName.getText().toString(),
                         txtPassword.getText().toString(),
@@ -204,17 +201,17 @@ public class ProfileFragment extends Fragment {
                     @Override
                     public void onResponse(@NonNull Call<User> call, @NonNull Response<User> response) {
                         if (response.isSuccessful() && response.body() != null) {
-                            Toast.makeText(requireContext(), "Update user profile successfully", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), "Update user profile successfully", Toast.LENGTH_SHORT).show();
                             dialog.dismiss();
                         } else if (response.errorBody() != null) {
                             Error error = new Gson().fromJson(response.errorBody().charStream(), Error.class);
-                            Toast.makeText(requireContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     }
 
                     @Override
                     public void onFailure(@NonNull Call<User> call, @NonNull Throwable t) {
-                        Toast.makeText(requireContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
                         Log.e("TAG", "onFailure: " + t.getMessage());
                     }
                 }));
@@ -222,7 +219,7 @@ public class ProfileFragment extends Fragment {
 
     private void registerPaymentCard() {
         WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
-        Dialog dialog = new Dialog(requireContext());
+        Dialog dialog = new Dialog(getContext());
         dialog.setContentView(R.layout.dialog_payment);
         lp.copyFrom(dialog.getWindow().getAttributes());
         lp.width = WindowManager.LayoutParams.MATCH_PARENT;
@@ -239,7 +236,7 @@ public class ProfileFragment extends Fragment {
         Button btnCancel = dialog.findViewById(R.id.btnCancel);
 
         // TODO: binding data
-        Map<String, String> payment = SharedPreferencesHandler.loadPayment(requireContext());
+        Map<String, String> payment = SharedPreferencesHandler.loadPayment(getContext());
         txtPaymentCardNumber.setText(payment.get(Constants.PAYMENT_CARD_NUMBER));
         txtPaymentName.setText(payment.get(Constants.PAYMENT_NAME));
         txtPaymentStartDate.setText(payment.get(Constants.PAYMENT_START_DATE));
@@ -263,15 +260,15 @@ public class ProfileFragment extends Fragment {
             }
 
             paymentService.registerPaymentCard(
-                    SharedPreferencesHandler.loadAppData(requireContext()),
+                    SharedPreferencesHandler.loadAppData(getContext()),
                     new PaymentCard(txtPaymentCardNumber.getText().toString(), txtPaymentName.getText().toString(), startDate, endDate, txtPaymentCVC.getText().toString()))
                     .enqueue(new Callback<String>() {
                         @Override
                         public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
                             if (response.isSuccessful() && response.body() != null) {
-                                Toast.makeText(requireContext(), response.body(), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), response.body(), Toast.LENGTH_SHORT).show();
                                 SharedPreferencesHandler.savePayment(
-                                        requireContext(),
+                                        getContext(),
                                         txtPaymentCardNumber.getText().toString(),
                                         txtPaymentName.getText().toString(),
                                         txtPaymentStartDate.getText().toString(),
@@ -280,13 +277,13 @@ public class ProfileFragment extends Fragment {
                                 dialog.dismiss();
                             } else if (response.errorBody() != null) {
                                 Error error = new Gson().fromJson(response.errorBody().charStream(), Error.class);
-                                Toast.makeText(requireContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
                             }
                         }
 
                         @Override
                         public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
-                            Toast.makeText(requireContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
                             Log.e("TAG", "onFailure: " + t.getMessage());
                         }
                     });
@@ -303,7 +300,7 @@ public class ProfileFragment extends Fragment {
         };
 
         DatePickerDialog date = new DatePickerDialog(
-                requireContext(),
+                getContext(),
                 e,
                 cal.get(Calendar.YEAR),
                 cal.get(Calendar.MONTH),
@@ -320,46 +317,46 @@ public class ProfileFragment extends Fragment {
     }
 
     private void getWishList() {
-        bookService.getWishList(SharedPreferencesHandler.loadAppData(requireContext())).enqueue(new Callback<BookList>() {
+        bookService.getWishList(SharedPreferencesHandler.loadAppData(getContext())).enqueue(new Callback<BookList>() {
             @Override
             public void onResponse(@NonNull Call<BookList> call, @NonNull Response<BookList> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     BookList bookList = response.body();
                     ArrayList<Book> books = bookList.getProducts() == null ? new ArrayList<>() : bookList.getProducts();
                     rcvMyCollection.setAdapter(new BookAdapter(books, (v, position) -> getBookDetail(books.get(position).getId())));
-                    rcvMyCollection.setLayoutManager(new LinearLayoutManager(requireContext()));
+                    rcvMyCollection.setLayoutManager(new LinearLayoutManager(getContext()));
                 } else if (response.errorBody() != null) {
                     Error error = new Gson().fromJson(response.errorBody().charStream(), Error.class);
-                    Toast.makeText(requireContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<BookList> call, @NonNull Throwable t) {
-                Toast.makeText(requireContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
                 Log.e("TAG", "onFailure: " + t.getMessage());
             }
         });
     }
 
     private void getSeenList() {
-        bookService.getSeenList(SharedPreferencesHandler.loadAppData(requireContext())).enqueue(new Callback<BookList>() {
+        bookService.getSeenList(SharedPreferencesHandler.loadAppData(getContext())).enqueue(new Callback<BookList>() {
             @Override
             public void onResponse(@NonNull Call<BookList> call, @NonNull Response<BookList> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     BookList bookList = response.body();
                     ArrayList<Book> books = bookList.getProducts() == null ? new ArrayList<>() : bookList.getProducts();
                     rcvMyCollection.setAdapter(new BookAdapter(books, (v, position) -> getBookDetail(books.get(position).getId())));
-                    rcvMyCollection.setLayoutManager(new LinearLayoutManager(requireContext()));
+                    rcvMyCollection.setLayoutManager(new LinearLayoutManager(getContext()));
                 } else if (response.errorBody() != null) {
                     Error error = new Gson().fromJson(response.errorBody().charStream(), Error.class);
-                    Toast.makeText(requireContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<BookList> call, @NonNull Throwable t) {
-                Toast.makeText(requireContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
                 Log.e("TAG", "onFailure: " + t.getMessage());
             }
         });
@@ -383,13 +380,13 @@ public class ProfileFragment extends Fragment {
                     startActivity(i);
                 } else if (response.errorBody() != null) {
                     Error error = new Gson().fromJson(response.errorBody().charStream(), Error.class);
-                    Toast.makeText(requireContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<Book> call, @NonNull Throwable t) {
-                Toast.makeText(requireContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
                 Log.e("TAG", "onFailure: " + t.getMessage());
             }
         });

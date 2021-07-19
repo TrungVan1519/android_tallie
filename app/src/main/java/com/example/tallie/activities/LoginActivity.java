@@ -54,8 +54,8 @@ public class LoginActivity extends AppCompatActivity {
 
         // TODO: handle e
         btnLogin.setOnClickListener(v -> login());
-        txtForgotPassword.setOnClickListener(v -> startActivity(new Intent(this, SignUpActivity.class)));
-        txtSignUp.setOnClickListener(v -> Toast.makeText(this, "Forgot password is not available", Toast.LENGTH_SHORT).show());
+        txtSignUp.setOnClickListener(v -> startActivity(new Intent(this, SignUpActivity.class)));
+        txtForgotPassword.setOnClickListener(v -> Toast.makeText(this, "Forgot password is not available", Toast.LENGTH_SHORT).show());
     }
 
     private void login() {

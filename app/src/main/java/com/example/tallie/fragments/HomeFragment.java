@@ -98,16 +98,16 @@ public class HomeFragment extends Fragment {
                                     dialog.findViewById(R.id.btnFullScreen).setOnClickListener(v -> {
                                         Intent i = new Intent(getContext(), BookListActivity.class);
                                         i.putExtra("bookList", bookList);
-                                        requireContext().startActivity(i);
+                                        getContext().startActivity(i);
                                     });
 
                                     ListView lsvBooks = dialog.findViewById(R.id.lsvBooks);
-                                    lsvBooks.setAdapter(new BookListViewAdapter<>(requireContext(), R.layout.row_book, books));
+                                    lsvBooks.setAdapter(new BookListViewAdapter<>(getContext(), R.layout.row_book, books));
                                     lsvBooks.setOnItemClickListener((parent, view, position1, id) -> getBookDetail(books.get(position1).getId()));
                                 }
                             } else if (response.errorBody() != null) {
                                 Error error = new Gson().fromJson(response.errorBody().charStream(), Error.class);
-                                Toast.makeText(requireContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
                             }
                         }
 
@@ -120,13 +120,13 @@ public class HomeFragment extends Fragment {
                     rcvCategories.setLayoutManager(new GridLayoutManager(getActivity(), 1, GridLayoutManager.HORIZONTAL, false));
                 } else if (response.errorBody() != null) {
                     Error error = new Gson().fromJson(response.errorBody().charStream(), Error.class);
-                    Toast.makeText(requireContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<CategoryList> call, @NonNull Throwable t) {
-                Toast.makeText(requireContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
                 Log.e("TAG", "onFailure: " + t.getMessage());
             }
         });
@@ -141,13 +141,13 @@ public class HomeFragment extends Fragment {
                     rcvMostViewed.setLayoutManager(new GridLayoutManager(getActivity(), 1, GridLayoutManager.HORIZONTAL, false));
                 } else if (response.errorBody() != null) {
                     Error error = new Gson().fromJson(response.errorBody().charStream(), Error.class);
-                    Toast.makeText(requireContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<MostViewedList> call, @NonNull Throwable t) {
-                Toast.makeText(requireContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
                 Log.e("TAG", "onFailure: " + t.getMessage());
             }
         });
@@ -162,13 +162,13 @@ public class HomeFragment extends Fragment {
                     rcvFeaturedBooks.setLayoutManager(new GridLayoutManager(getActivity(), 1, GridLayoutManager.HORIZONTAL, false));
                 } else if (response.errorBody() != null) {
                     Error error = new Gson().fromJson(response.errorBody().charStream(), Error.class);
-                    Toast.makeText(requireContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<BookList> call, @NonNull Throwable t) {
-                Toast.makeText(requireContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
                 Log.e("TAG", "onFailure: " + t.getMessage());
             }
         });
@@ -185,13 +185,13 @@ public class HomeFragment extends Fragment {
                     startActivity(i);
                 } else if (response.errorBody() != null) {
                     Error error = new Gson().fromJson(response.errorBody().charStream(), Error.class);
-                    Toast.makeText(requireContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<Book> call, @NonNull Throwable t) {
-                Toast.makeText(requireContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
                 Log.e("TAG", "onFailure: " + t.getMessage());
             }
         });

@@ -79,14 +79,7 @@ public class CartActivity extends AppCompatActivity {
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 if (rcvCart.getAdapter() == null) return;
-                CartAdapter adapter = (CartAdapter) rcvCart.getAdapter();
-                boolean isSuccess = adapter.deleteItem(CartActivity.this, viewHolder.getAdapterPosition());
-                if (isSuccess) {
-                    txtCart.setText(txtCart.getText().toString().concat(": " + --orderCount));
-                } else {
-                    finish();
-                    startActivity(getIntent());
-                }
+                ((CartAdapter) rcvCart.getAdapter()).deleteItem(CartActivity.this, viewHolder.getAdapterPosition(), txtCart);
             }
         }).attachToRecyclerView(rcvCart);
     }

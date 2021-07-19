@@ -1,5 +1,6 @@
 package com.example.tallie.adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -105,8 +106,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
         return orders.size();
     }
 
-    public boolean deleteItem(Context context, int position) {
-        final boolean[] result = {false};
+    public void deleteItem(Context context, int position, TextView txtCart) {
         orderService.deleteOrder(SharedPreferencesHandler.loadAppData(context), orders.get(position).get_id()).enqueue(new Callback<Order>() {
             @Override
             public void onResponse(@NonNull Call<Order> call, @NonNull Response<Order> response) {
@@ -114,10 +114,19 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
                     orders.remove(position);
                     notifyItemRemoved(position);
                     Toast.makeText(context, "Delete successfully", Toast.LENGTH_SHORT).show();
-                    result[0] = true;
+
+                    String newText = "Your card: " + orders.size();
+                    txtCart.setText(newText);
                 } else if (response.errorBody() != null) {
-                    Error error = new Gson().fromJson(response.errorBody().charStream(), Error.class);
-                    Toast.makeText(context, error.getMessage(), Toast.LENGTH_SHORT).show();
+                    try {
+                        Toast.makeText(context, response.errorBody().string(), Toast.LENGTH_SHORT).show();
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+
+                    Activity activity = (Activity) context;
+                    activity.startActivity(activity.getIntent());
+                    activity.finish();
                 }
             }
 
@@ -127,8 +136,6 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
                 Log.e("TAG", "onFailure: " + t.getMessage());
             }
         });
-
-        return result[0];
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
