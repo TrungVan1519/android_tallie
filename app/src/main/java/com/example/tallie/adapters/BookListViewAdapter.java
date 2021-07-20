@@ -1,37 +1,24 @@
 package com.example.tallie.adapters;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.bumptech.glide.Glide;
 import com.example.tallie.R;
 import com.example.tallie.models.Book;
-import com.example.tallie.models.Error;
-import com.example.tallie.services.ImageService;
-import com.example.tallie.utils.RetrofitClient;
-import com.google.gson.Gson;
 
 import java.util.List;
 
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
 public class BookListViewAdapter<T> extends ArrayAdapter<T> {
 
-    private final ImageService imageService = RetrofitClient.getInstance("https://tallie-image.herokuapp.com/").create(ImageService.class);
     private final Context mContext;
     private final int mLayout;
     private final List<T> mData;
@@ -57,24 +44,10 @@ public class BookListViewAdapter<T> extends ArrayAdapter<T> {
         if (book.getPictures() == null) {
             holder.imgBookPicture.setImageResource(R.drawable.ic_hmm);
         } else {
-            imageService.downloadImage(book.getPictures().get(0).getImg_id()).enqueue(new Callback<ResponseBody>() {
-                @Override
-                public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
-                    if (response.isSuccessful() && response.body() != null) {
-                        Bitmap image = BitmapFactory.decodeStream(response.body().byteStream());
-                        holder.imgBookPicture.setImageBitmap(image);
-                    } else if (response.errorBody() != null) {
-                        Error error = new Gson().fromJson(response.errorBody().charStream(), Error.class);
-                        Toast.makeText(parent.getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                }
-
-                @Override
-                public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
-                    Toast.makeText(parent.getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
-                    Log.e("TAG", "onFailure: " + t.getMessage());
-                }
-            });
+            Glide.with(parent.getContext())
+                    .load("https://tallie-image.herokuapp.com/images/" + book.getPictures().get(0).getImg_id())
+                    .fitCenter()
+                    .into(holder.imgBookPicture);
         }
         holder.txtBookName.setText(book.getName());
         holder.txtBookAuthor.setText(book.getAuthor());

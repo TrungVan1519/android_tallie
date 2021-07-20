@@ -4,8 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.res.ColorStateList;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -26,6 +24,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.tallie.R;
 import com.example.tallie.adapters.ReviewAdapter;
 import com.example.tallie.models.Book;
@@ -36,8 +35,6 @@ import com.example.tallie.models.Review;
 import com.example.tallie.models.ReviewList;
 import com.example.tallie.models.User;
 import com.example.tallie.services.BookService;
-import com.example.tallie.services.ImageService;
-import com.example.tallie.services.PaymentService;
 import com.example.tallie.services.UserService;
 import com.example.tallie.utils.Constants;
 import com.example.tallie.utils.RetrofitClient;
@@ -47,13 +44,10 @@ import com.google.gson.Gson;
 import com.makeramen.roundedimageview.RoundedImageView;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -62,10 +56,6 @@ public class BookDetailActivity extends AppCompatActivity {
 
     UserService userService = RetrofitClient.getInstance("https://tallie.herokuapp.com/").create(UserService.class);
     BookService bookService = RetrofitClient.getInstance("https://tallie.herokuapp.com/").create(BookService.class);
-    ImageService imageService = RetrofitClient.getInstance("https://tallie-image.herokuapp.com/").create(ImageService.class);
-    PaymentService paymentService = RetrofitClient.getInstance("https://tallie.herokuapp.com/").create(PaymentService.class);
-
-    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 
     RoundedImageView imgBookPicture;
     FloatingActionButton btnAddToCart, btnWishList;
@@ -130,25 +120,10 @@ public class BookDetailActivity extends AppCompatActivity {
     }
 
     private void populateBookData(Book book) {
-        imageService.downloadImage(book.getPictures().get(0).getImg_id()).enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    Bitmap image = BitmapFactory.decodeStream(response.body().byteStream());
-                    imgBookPicture.setImageBitmap(image);
-                } else if (response.errorBody() != null) {
-                    Error error = new Gson().fromJson(response.errorBody().charStream(), Error.class);
-                    Toast.makeText(BookDetailActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
-                Toast.makeText(BookDetailActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.e("TAG", "onFailure: " + t.getMessage());
-            }
-        });
-
+        Glide.with(this)
+                .load("https://tallie-image.herokuapp.com/images/" + book.getPictures().get(0).getImg_id())
+                .fitCenter()
+                .into(imgBookPicture);
         txtBookName.setText(book.getName());
         txtBookAuthor.setText(book.getAuthor());
         txtBookPrice.setText(String.valueOf(book.getPrice()));

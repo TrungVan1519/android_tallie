@@ -109,7 +109,6 @@ public class ProfileFragment extends Fragment {
 
                 @Override
                 public void onFailure(@NonNull Call<User> call, @NonNull Throwable t) {
-                    Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
                     Log.e("TAG", "onFailure: " + t.getMessage());
                 }
             });
@@ -149,7 +148,6 @@ public class ProfileFragment extends Fragment {
 
             @Override
             public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
-                Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
                 Log.e("TAG", "onFailure: " + t.getMessage());
             }
         });
@@ -211,7 +209,6 @@ public class ProfileFragment extends Fragment {
 
                     @Override
                     public void onFailure(@NonNull Call<User> call, @NonNull Throwable t) {
-                        Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
                         Log.e("TAG", "onFailure: " + t.getMessage());
                     }
                 }));
@@ -283,7 +280,6 @@ public class ProfileFragment extends Fragment {
 
                         @Override
                         public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
-                            Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
                             Log.e("TAG", "onFailure: " + t.getMessage());
                         }
                     });
@@ -333,7 +329,6 @@ public class ProfileFragment extends Fragment {
 
             @Override
             public void onFailure(@NonNull Call<BookList> call, @NonNull Throwable t) {
-                Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
                 Log.e("TAG", "onFailure: " + t.getMessage());
             }
         });
@@ -356,7 +351,6 @@ public class ProfileFragment extends Fragment {
 
             @Override
             public void onFailure(@NonNull Call<BookList> call, @NonNull Throwable t) {
-                Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
                 Log.e("TAG", "onFailure: " + t.getMessage());
             }
         });
@@ -386,7 +380,6 @@ public class ProfileFragment extends Fragment {
 
             @Override
             public void onFailure(@NonNull Call<Book> call, @NonNull Throwable t) {
-                Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
                 Log.e("TAG", "onFailure: " + t.getMessage());
             }
         });
